@@ -1,0 +1,38 @@
+package di
+
+import (
+	"gorm.io/gorm"
+	"myproject/forum/server/config"
+	"myproject/forum/server/controller"
+	"myproject/forum/server/repository"
+	"myproject/forum/server/router/routes"
+	"myproject/forum/server/service"
+)
+
+type Container struct {
+	DB             *gorm.DB
+	UserRepository *repository.UserRepository
+	UserService    *service.UserService
+	UserController *controller.UserController
+	UserRoutes     *routes.UserRoutes
+}
+
+func InitializeContainer(cfg *config.Config) *Container {
+	db := config.ConnectDB(cfg)
+
+	//User
+	user_repository := repository.NewUserRepository(db)
+	user_service := service.NewUserService(user_repository)
+	user_controller := controller.NewUserController(user_service)
+	user_routes := &routes.UserRoutes{
+		UserController: user_controller,
+	}
+
+	return &Container{
+		DB:             db,
+		UserRepository: user_repository,
+		UserService:    user_service,
+		UserController: user_controller,
+		UserRoutes:     user_routes,
+	}
+}

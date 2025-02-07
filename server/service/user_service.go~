@@ -1,0 +1,57 @@
+package service
+
+import (
+	"errors"
+	"myproject/forum/server/models"
+	"myproject/forum/server/repository"
+)
+
+type IUserService interface {
+	CreateUser(user *models.User) error
+	GetUserByID(id uint64) (*models.User, error)
+	GetUserByEmail(email string) (*models.User, error)
+	UpdateUser(user *models.User) error
+	DeleteUser(id uint64) error
+	ListUsers() ([]models.User, error)
+}
+
+type UserService struct {
+	UserRepository repository.IUserRepository
+}
+
+func NewUserService(user_repository repository.IUserRepository) *UserService {
+	return &UserService{
+		UserRepository: user_repository,
+	}
+}
+
+func (s *UserService) CreateUser(user *models.User) error {
+	if user.Email == "" || user.Password == "" || user.Username == "" {
+		return errors.New("Missing required fields")
+	}
+	existed_user, _ := s.GetUserByEmail(user.Email)
+	if existed_user != nil {
+		return errors.New("User already exists")
+	}
+	return s.UserRepository.Create(user)
+}
+
+func (s *UserService) GetUserByID(id uint64) (*models.User, error) {
+	return s.UserRepository.FindByID(id)
+}
+
+func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
+	return s.UserRepository.FindByEmail(email)
+}
+
+func (s *UserService) UpdateUser(user *models.User) error {
+	return s.UserRepository.Update(user)
+}
+
+func (s *UserService) DeleteUser(id uint64) error {
+	return s.UserRepository.Delete(id)
+}
+
+func (s *UserService) ListUsers() ([]models.User, error) {
+	return s.repository.ListAll()
+}
