@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func AuthTokenMiddleware() gin.HandlerFunc {
+func AuthenticationMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
 	}

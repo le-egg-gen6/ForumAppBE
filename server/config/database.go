@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
 )
 
 func ConnectDB(cfg *Config) *gorm.DB {
@@ -19,7 +18,7 @@ func ConnectDB(cfg *Config) *gorm.DB {
 	db, err := gorm.Open(postgres.Open(connect_str), &gorm.Config{})
 
 	if err != nil {
-		log.Fatalf("Error connecting to database, %s", err)
+		panic("Failed to connect to database" + err.Error())
 	}
 
 	return db
