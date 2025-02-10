@@ -4,10 +4,14 @@ import (
 	"log"
 	"myproject/forum/server/config"
 	"myproject/forum/server/di"
+	"myproject/forum/server/logger"
 	"myproject/forum/server/router"
 )
 
 func main() {
+	logger.InitializeLogger()
+	defer CleanupUnfinishedTasks()
+
 	cfg := config.LoadConfig()
 
 	container := di.InitializeContainer(cfg)
@@ -22,4 +26,9 @@ func main() {
 		log.Fatalf("Error starting server, %s", err)
 	}
 
+}
+
+func CleanupUnfinishedTasks() {
+	di.CleanupContainer()
+	logger.CleanupQueuedLogs()
 }

@@ -36,3 +36,6 @@ func InitializeContainer(cfg *config.Config) *Container {
 		UserRoutes:     user_routes,
 	}
 }
+
+func CleanupContainer() {
+}

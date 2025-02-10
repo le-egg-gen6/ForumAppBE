@@ -84,6 +84,6 @@ func InitializeLogger() {
 
 func CleanupQueuedLogs() {
 	if LogInstance != nil {
-		_ = LogInstance.Sync()
+		LogInstance.Sync()
 	}
 }
