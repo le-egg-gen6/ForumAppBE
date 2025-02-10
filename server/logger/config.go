@@ -5,10 +5,10 @@ import (
 )
 
 type LoggerConfig struct {
-	LOG_LEVEL    string
-	FILE_PATTERN string
-	MAX_SIZE     int
-	BASE_LOG_DIR string
+	LogLevel    string
+	FilePattern string
+	MaxSize     int
+	BaseLogDir  string
 }
 
 func LoadLoggerConfig() (*LoggerConfig, error) {
@@ -20,9 +20,9 @@ func LoadLoggerConfig() (*LoggerConfig, error) {
 	}
 
 	return &LoggerConfig{
-		LOG_LEVEL:    viper.GetString("log_level"),
-		FILE_PATTERN: viper.GetString("file_pattern"),
-		MAX_SIZE:     viper.GetInt("max_size"),
-		BASE_LOG_DIR: viper.GetString("base_log_dir"),
+		LogLevel:    viper.GetString("log_level"),
+		FilePattern: viper.GetString("file_pattern"),
+		MaxSize:     viper.GetInt("max_size"),
+		BaseLogDir:  viper.GetString("base_log_dir"),
 	}, nil
 }

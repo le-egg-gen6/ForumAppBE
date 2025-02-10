@@ -11,37 +11,37 @@ import (
 )
 
 func EnsureBaseLogDirectoryExist(cfg *LoggerConfig) error {
-	if _, err := os.Stat(cfg.BASE_LOG_DIR); os.IsNotExist(err) {
-		return os.MkdirAll(cfg.BASE_LOG_DIR, 0755)
+	if _, err := os.Stat(cfg.BaseLogDir); os.IsNotExist(err) {
+		return os.MkdirAll(cfg.BaseLogDir, 0755)
 	}
 	return nil
 }
 
 func GetNextLogFileName(cfg *LoggerConfig) (string, error) {
-	date_str := time.Now().Format(cfg.FILE_PATTERN)
+	dateStr := time.Now().Format(cfg.FilePattern)
 
-	base_name := fmt.Sprintf("%s_%s.log", "log", date_str)
+	baseName := fmt.Sprintf("%s_%s.log", "log", dateStr)
 
 	if err := EnsureBaseLogDirectoryExist(cfg); err != nil {
 		return "", err
 	}
 	var index int
-	var log_file string
+	var logFile string
 
 	for {
-		log_file = fmt.Sprintf("%s_%d.log", base_name, index+1)
-		log_path := filepath.Join(cfg.BASE_LOG_DIR, log_file)
-		if _, err := os.Stat(log_file); os.IsNotExist(err) {
-			return log_file, nil
+		logFile = fmt.Sprintf("%s_%d.log", baseName, index+1)
+		logPath := filepath.Join(cfg.BaseLogDir, logFile)
+		if _, err := os.Stat(logFile); os.IsNotExist(err) {
+			return logFile, nil
 		}
 
-		file_info, err := os.Stat(log_file)
+		fileInfo, err := os.Stat(logFile)
 		if err != nil {
 			return "", err
 		}
 
-		if file_info.Size() < int64(cfg.MAX_SIZE*1024*1024) {
-			return log_path, nil
+		if fileInfo.Size() < int64(cfg.MaxSize*1024*1024) {
+			return logPath, nil
 		}
 		index++
 	}
@@ -68,24 +68,24 @@ func ParseLogLevel(level string) zapcore.Level {
 }
 
 func InitializeNewLogInstance(cfg *LoggerConfig) (*zap.Logger, error) {
-	log_filename, err := GetNextLogFileName(cfg)
+	logFilename, err := GetNextLogFileName(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	file, err := os.OpenFile(log_filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(logFilename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, err
 	}
 
 	writer := zapcore.AddSync(file)
 
-	log_level := ParseLogLevel(cfg.LOG_LEVEL)
+	logLevel := ParseLogLevel(cfg.LogLevel)
 
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
 		writer,
-		log_level,
+		logLevel,
 	)
 
 	return zap.New(core, zap.AddCaller()), nil
@@ -94,11 +94,11 @@ func InitializeNewLogInstance(cfg *LoggerConfig) (*zap.Logger, error) {
 var LogInstance *zap.Logger
 
 func InitializeLogger() {
-	log_cfg, err := LoadLoggerConfig()
+	logCfg, err := LoadLoggerConfig()
 	if err != nil {
 		//
 	}
-	LogInstance, err = InitializeNewLogInstance(log_cfg)
+	LogInstance, err = InitializeNewLogInstance(logCfg)
 	if err != nil {
 		//
 	}

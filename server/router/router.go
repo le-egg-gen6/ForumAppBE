@@ -12,9 +12,9 @@ type Router interface {
 func InitializeRouter(cfg *config.Config, routerModules []Router) *gin.Engine {
 	router := gin.Default()
 
-	api_prefix := "/api/" + cfg.API_VERSION
+	apiPrefix := "/api/" + cfg.API_VERSION
 
-	api := router.Group(api_prefix)
+	api := router.Group(apiPrefix)
 
 	for _, module := range routerModules {
 		module.RegisterRoutes(api)

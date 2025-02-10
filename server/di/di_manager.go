@@ -10,30 +10,47 @@ import (
 )
 
 type Container struct {
-	DB             *gorm.DB
+	DB *gorm.DB
+
 	UserRepository *repository.UserRepository
 	UserService    *service.UserService
 	UserController *controller.UserController
 	UserRoutes     *routes.UserRoutes
+
+	PostRepository *repository.PostRepository
+	PostService    *service.PostService
+	PostController *controller.PostController
+	PostRoutes     *routes.PostRoutes
 }
 
 func InitializeContainer(cfg *config.Config) *Container {
 	db := config.ConnectDB(cfg)
 
 	//User
-	user_repository := repository.NewUserRepository(db)
-	user_service := service.NewUserService(user_repository)
-	user_controller := controller.NewUserController(user_service)
-	user_routes := &routes.UserRoutes{
-		UserController: user_controller,
+	userRepository := repository.NewUserRepository(db)
+	userService := service.NewUserService(userRepository)
+	userController := controller.NewUserController(userService)
+	userRoutes := &routes.UserRoutes{
+		UserController: userController,
+	}
+
+	postRepository := repository.NewPostRepository(db)
+	postService := service.NewPostService(postRepository)
+	postController := controller.NewPostController(postService)
+	postRoutes := &routes.PostRoutes{
+		PostController: postController,
 	}
 
 	return &Container{
 		DB:             db,
-		UserRepository: user_repository,
-		UserService:    user_service,
-		UserController: user_controller,
-		UserRoutes:     user_routes,
+		UserRepository: userRepository,
+		UserService:    userService,
+		UserController: userController,
+		UserRoutes:     userRoutes,
+		PostRepository: postRepository,
+		PostService:    postService,
+		PostController: postController,
+		PostRoutes:     postRoutes,
 	}
 }
 

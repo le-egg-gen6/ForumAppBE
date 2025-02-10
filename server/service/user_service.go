@@ -19,9 +19,9 @@ type UserService struct {
 	UserRepository repository.IUserRepository
 }
 
-func NewUserService(user_repository repository.IUserRepository) *UserService {
+func NewUserService(userRepository repository.IUserRepository) *UserService {
 	return &UserService{
-		UserRepository: user_repository,
+		UserRepository: userRepository,
 	}
 }
 
@@ -29,8 +29,8 @@ func (s *UserService) CreateUser(user *models.User) error {
 	if user.Email == "" || user.Password == "" || user.Username == "" {
 		return errors.New("Missing required fields")
 	}
-	existed_user, _ := s.GetUserByEmail(user.Email)
-	if existed_user != nil {
+	existedUser, _ := s.GetUserByEmail(user.Email)
+	if existedUser != nil {
 		return errors.New("User already exists")
 	}
 	return s.UserRepository.Create(user)

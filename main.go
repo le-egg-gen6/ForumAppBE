@@ -18,6 +18,7 @@ func main() {
 
 	routesModules := []router.Router{
 		container.UserRoutes,
+		container.PostRoutes,
 	}
 
 	initializeRouter := router.InitializeRouter(cfg, routesModules)
