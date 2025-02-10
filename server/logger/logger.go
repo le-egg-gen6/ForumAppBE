@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -47,6 +48,25 @@ func GetNextLogFileName(cfg *LoggerConfig) (string, error) {
 
 }
 
+func ParseLogLevel(level string) zapcore.Level {
+	switch strings.ToLower(level) {
+	case "debug":
+		return zapcore.DebugLevel
+	case "info":
+		return zapcore.InfoLevel
+	case "warn", "warning":
+		return zapcore.WarnLevel
+	case "error":
+		return zapcore.ErrorLevel
+	case "fatal":
+		return zapcore.FatalLevel
+	case "panic":
+		return zapcore.PanicLevel
+	default:
+		return zapcore.InfoLevel
+	}
+}
+
 func InitializeNewLogInstance(cfg *LoggerConfig) (*zap.Logger, error) {
 	log_filename, err := GetNextLogFileName(cfg)
 	if err != nil {
@@ -60,10 +80,12 @@ func InitializeNewLogInstance(cfg *LoggerConfig) (*zap.Logger, error) {
 
 	writer := zapcore.AddSync(file)
 
+	log_level := ParseLogLevel(cfg.LOG_LEVEL)
+
 	core := zapcore.NewCore(
 		zapcore.NewJSONEncoder(zap.NewDevelopmentEncoderConfig()),
 		writer,
-		zap.InfoLevel,
+		log_level,
 	)
 
 	return zap.New(core, zap.AddCaller()), nil
