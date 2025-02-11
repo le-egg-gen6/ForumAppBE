@@ -10,17 +10,19 @@ import (
 )
 
 type Container struct {
-	DB *gorm.DB
-
-	UserRepository *repository.UserRepository
-	UserService    *service.UserService
-	UserController *controller.UserController
-	UserRoutes     *routes.UserRoutes
-
-	PostRepository *repository.PostRepository
-	PostService    *service.PostService
-	PostController *controller.PostController
-	PostRoutes     *routes.PostRoutes
+	DB                *gorm.DB
+	UserRepository    *repository.UserRepository
+	UserService       *service.UserService
+	UserController    *controller.UserController
+	UserRoutes        *routes.UserRoutes
+	PostRepository    *repository.PostRepository
+	PostService       *service.PostService
+	PostController    *controller.PostController
+	PostRoutes        *routes.PostRoutes
+	CommentRepository *repository.CommentRepository
+	CommentService    *service.CommentService
+	CommentController *controller.CommentController
+	CommentRoutes     *routes.CommentRoutes
 }
 
 func InitializeContainer(cfg *config.Config) *Container {
@@ -41,16 +43,27 @@ func InitializeContainer(cfg *config.Config) *Container {
 		PostController: postController,
 	}
 
+	commentRepository := repository.NewCommentRepository(db)
+	commentService := service.NewCommentService(commentRepository)
+	commentController := controller.NewCommentController(commentService)
+	commentRoutes := &routes.CommentRoutes{
+		CommentController: commentController,
+	}
+
 	return &Container{
-		DB:             db,
-		UserRepository: userRepository,
-		UserService:    userService,
-		UserController: userController,
-		UserRoutes:     userRoutes,
-		PostRepository: postRepository,
-		PostService:    postService,
-		PostController: postController,
-		PostRoutes:     postRoutes,
+		DB:                db,
+		UserRepository:    userRepository,
+		UserService:       userService,
+		UserController:    userController,
+		UserRoutes:        userRoutes,
+		PostRepository:    postRepository,
+		PostService:       postService,
+		PostController:    postController,
+		PostRoutes:        postRoutes,
+		CommentRepository: commentRepository,
+		CommentService:    commentService,
+		CommentController: commentController,
+		CommentRoutes:     commentRoutes,
 	}
 }
 

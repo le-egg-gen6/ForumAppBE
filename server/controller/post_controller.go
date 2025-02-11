@@ -7,5 +7,7 @@ type PostController struct {
 }
 
 func NewPostController(postService service.IPostService) *PostController {
-	return &PostController{}
+	return &PostController{
+		PostService: postService,
+	}
 }
