@@ -5,6 +5,7 @@ import (
 	"myproject/forum/cloudinary"
 	config2 "myproject/forum/config"
 	controller2 "myproject/forum/controller"
+	"myproject/forum/mail_sender"
 	repository2 "myproject/forum/repository"
 	routes2 "myproject/forum/router/routes"
 	service2 "myproject/forum/service"
@@ -14,6 +15,8 @@ type Container struct {
 	DB *gorm.DB
 
 	FileUploader *cloudinary.FileUploader
+
+	MailSender *mail_sender.MailSender
 
 	UserRepository *repository2.UserRepository
 	UserService    *service2.UserService
@@ -41,6 +44,9 @@ func InitializeContainer(cfg *config2.Config) *Container {
 
 	//File uploader
 	fileUploader := cloudinary.NewFileUploader()
+
+	//Mail Sender
+	mailSender := mail_sender.NewMailSender()
 
 	//User
 	userRepository := repository2.NewUserRepository(db)
@@ -78,6 +84,8 @@ func InitializeContainer(cfg *config2.Config) *Container {
 		DB: db,
 
 		FileUploader: fileUploader,
+
+		MailSender: mailSender,
 
 		ReactionRepository: reactionRepository,
 		ReactionService:    reactionService,
