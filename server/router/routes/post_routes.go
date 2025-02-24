@@ -10,7 +10,7 @@ type PostRoutes struct {
 }
 
 func (r *PostRoutes) RegisterRoutes(router *gin.RouterGroup) {
-	posts := router.Group("/users")
+	posts := router.Group("/posts")
 	{
 		posts.GET("/test")
 	}

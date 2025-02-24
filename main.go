@@ -1,6 +1,7 @@
-package ForumApp
+package main
 
 import (
+	"fmt"
 	"log"
 	"myproject/forum/server/config"
 	"myproject/forum/server/di"
@@ -24,7 +25,7 @@ func main() {
 
 	initializeRouter := router.InitializeRouter(cfg, routesModules)
 
-	if err := initializeRouter.Run(":" + cfg.PORT); err != nil {
+	if err := initializeRouter.Run(fmt.Sprintf(":%d", cfg.PORT)); err != nil {
 		log.Fatalf("Error starting server, %s", err)
 	}
 

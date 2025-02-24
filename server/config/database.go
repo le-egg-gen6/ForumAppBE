@@ -8,12 +8,12 @@ import (
 
 func ConnectDB(cfg *Config) *gorm.DB {
 	connectStr := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		"host=%s user=%s password=%s dbname=%s port=%d sslmode=disable",
+		cfg.DB_HOST,
 		cfg.DB_USERNAME,
 		cfg.DB_PASSWORD,
-		cfg.DB_HOST,
-		cfg.DB_PORT,
-		cfg.DB_NAME)
+		cfg.DB_NAME,
+		cfg.DB_PORT)
 
 	db, err := gorm.Open(postgres.Open(connectStr), &gorm.Config{})
 

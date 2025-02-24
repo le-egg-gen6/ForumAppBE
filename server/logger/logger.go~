@@ -99,6 +99,9 @@ func InitializeLogger() {
 		//
 	}
 	LogInstance, err = InitializeNewLogInstance(logCfg)
+	if LogInstance == nil {
+		print("???")
+	}
 	if err != nil {
 		//
 	}

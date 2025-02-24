@@ -14,6 +14,7 @@ type LoggerConfig struct {
 func LoadLoggerConfig() (*LoggerConfig, error) {
 	viper.SetConfigName("log_config")
 	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err
