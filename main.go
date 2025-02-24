@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
-	"myproject/forum/server/config"
-	"myproject/forum/server/di"
-	"myproject/forum/server/logger"
-	"myproject/forum/server/router"
+	"myproject/forum/config"
+	"myproject/forum/di"
+	"myproject/forum/logger"
+	"myproject/forum/router"
 )
 
 func main() {
