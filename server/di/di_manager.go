@@ -2,6 +2,7 @@ package di
 
 import (
 	"gorm.io/gorm"
+	"myproject/forum/server/cloudinary"
 	"myproject/forum/server/config"
 	"myproject/forum/server/controller"
 	"myproject/forum/server/repository"
@@ -11,6 +12,8 @@ import (
 
 type Container struct {
 	DB *gorm.DB
+
+	FileUploader *cloudinary.FileUploader
 
 	UserRepository *repository.UserRepository
 	UserService    *service.UserService
@@ -35,6 +38,9 @@ type Container struct {
 
 func InitializeContainer(cfg *config.Config) *Container {
 	db := config.ConnectDB(cfg)
+
+	//File uploader
+	fileUploader := cloudinary.NewFileUploader()
 
 	//User
 	userRepository := repository.NewUserRepository(db)
@@ -70,6 +76,8 @@ func InitializeContainer(cfg *config.Config) *Container {
 
 	return &Container{
 		DB: db,
+
+		FileUploader: fileUploader,
 
 		ReactionRepository: reactionRepository,
 		ReactionService:    reactionService,

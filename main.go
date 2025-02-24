@@ -21,6 +21,7 @@ func main() {
 		container.UserRoutes,
 		container.PostRoutes,
 		container.CommentRoutes,
+		container.ReactionRoutes,
 	}
 
 	initializeRouter := router.InitializeRouter(cfg, routesModules)
