@@ -13,6 +13,6 @@ type User struct {
 	Deleted    bool       `gorm:"default:false" json:"deleted"`
 }
 
-func (*User) TableName() string {
+func (User) TableName() string {
 	return "users"
 }

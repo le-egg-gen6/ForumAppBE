@@ -13,6 +13,6 @@ type ContentReaction struct {
 	Count        int    `gorm:"" json:"count"`
 }
 
-func (*ContentReaction) TableName() string {
+func (ContentReaction) TableName() string {
 	return "content_reaction"
 }

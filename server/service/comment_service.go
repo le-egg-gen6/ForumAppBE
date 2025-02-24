@@ -6,11 +6,13 @@ type ICommentService interface {
 }
 
 type CommentService struct {
-	CommentRepository *repository.CommentRepository
+	CommentRepository  repository.ICommentRepository
+	ReactionRepository repository.IReactionRepository
 }
 
-func NewCommentService(commentRepository *repository.CommentRepository) *CommentService {
+func NewCommentService(commentRepository repository.ICommentRepository, reactionRepository repository.IReactionRepository) *CommentService {
 	return &CommentService{
-		CommentRepository: commentRepository,
+		CommentRepository:  commentRepository,
+		ReactionRepository: reactionRepository,
 	}
 }

@@ -18,6 +18,10 @@ type CommentRepository struct {
 }
 
 func NewCommentRepository(db *gorm.DB) *CommentRepository {
+	err := db.AutoMigrate(&models.Comment{})
+	if err != nil {
+		//
+	}
 	return &CommentRepository{
 		db: db,
 	}

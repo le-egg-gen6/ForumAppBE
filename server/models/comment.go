@@ -12,6 +12,6 @@ type Comment struct {
 	Delete    bool       `gorm:"default:false" json:"deleted"`
 }
 
-func (*Comment) TableName() string {
+func (Comment) TableName() string {
 	return "comments"
 }

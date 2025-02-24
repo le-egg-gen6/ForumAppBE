@@ -12,6 +12,6 @@ type Post struct {
 	Deleted   bool       `gorm:"default:false" json:"deleted"`
 }
 
-func (*Post) TableName() string {
+func (Post) TableName() string {
 	return "posts"
 }

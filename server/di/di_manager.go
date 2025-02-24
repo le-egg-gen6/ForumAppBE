@@ -10,19 +10,27 @@ import (
 )
 
 type Container struct {
-	DB                *gorm.DB
-	UserRepository    *repository.UserRepository
-	UserService       *service.UserService
-	UserController    *controller.UserController
-	UserRoutes        *routes.UserRoutes
-	PostRepository    *repository.PostRepository
-	PostService       *service.PostService
-	PostController    *controller.PostController
-	PostRoutes        *routes.PostRoutes
+	DB *gorm.DB
+
+	UserRepository *repository.UserRepository
+	UserService    *service.UserService
+	UserController *controller.UserController
+	UserRoutes     *routes.UserRoutes
+
+	PostRepository *repository.PostRepository
+	PostService    *service.PostService
+	PostController *controller.PostController
+	PostRoutes     *routes.PostRoutes
+
 	CommentRepository *repository.CommentRepository
 	CommentService    *service.CommentService
 	CommentController *controller.CommentController
 	CommentRoutes     *routes.CommentRoutes
+
+	ReactionRepository *repository.ReactionRepository
+	ReactionService    *service.ReactionService
+	ReactionController *controller.ReactionController
+	ReactionRoutes     *routes.ReactionRoutes
 }
 
 func InitializeContainer(cfg *config.Config) *Container {
@@ -36,30 +44,48 @@ func InitializeContainer(cfg *config.Config) *Container {
 		UserController: userController,
 	}
 
+	//Reaction
+	reactionRepository := repository.NewReactionRepository(db)
+	reactionService := service.NewReactionService(reactionRepository)
+	reactionController := controller.NewReactionController(reactionService)
+	reactionRoutes := &routes.ReactionRoutes{
+		ReactionController: reactionController,
+	}
+
+	//Post
 	postRepository := repository.NewPostRepository(db)
-	postService := service.NewPostService(postRepository)
+	postService := service.NewPostService(postRepository, reactionRepository)
 	postController := controller.NewPostController(postService)
 	postRoutes := &routes.PostRoutes{
 		PostController: postController,
 	}
 
+	//Comment
 	commentRepository := repository.NewCommentRepository(db)
-	commentService := service.NewCommentService(commentRepository)
+	commentService := service.NewCommentService(commentRepository, reactionRepository)
 	commentController := controller.NewCommentController(commentService)
 	commentRoutes := &routes.CommentRoutes{
 		CommentController: commentController,
 	}
 
 	return &Container{
-		DB:                db,
-		UserRepository:    userRepository,
-		UserService:       userService,
-		UserController:    userController,
-		UserRoutes:        userRoutes,
-		PostRepository:    postRepository,
-		PostService:       postService,
-		PostController:    postController,
-		PostRoutes:        postRoutes,
+		DB: db,
+
+		ReactionRepository: reactionRepository,
+		ReactionService:    reactionService,
+		ReactionController: reactionController,
+		ReactionRoutes:     reactionRoutes,
+
+		UserRepository: userRepository,
+		UserService:    userService,
+		UserController: userController,
+		UserRoutes:     userRoutes,
+
+		PostRepository: postRepository,
+		PostService:    postService,
+		PostController: postController,
+		PostRoutes:     postRoutes,
+
 		CommentRepository: commentRepository,
 		CommentService:    commentService,
 		CommentController: commentController,

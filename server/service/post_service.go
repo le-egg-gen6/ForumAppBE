@@ -6,11 +6,13 @@ type IPostService interface {
 }
 
 type PostService struct {
-	PostRepository repository.IPostRepository
+	PostRepository     repository.IPostRepository
+	ReactionRepository repository.IReactionRepository
 }
 
-func NewPostService(postRepository repository.IPostRepository) *PostService {
+func NewPostService(postRepository repository.IPostRepository, reactionRepository repository.IReactionRepository) *PostService {
 	return &PostService{
-		PostRepository: postRepository,
+		PostRepository:     postRepository,
+		ReactionRepository: reactionRepository,
 	}
 }
