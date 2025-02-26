@@ -48,34 +48,43 @@ func InitializeContainer(cfg *config2.Config) *Container {
 	//Mail Sender
 	mailSender := mail_sender.NewMailSender()
 
-	//User
+	//Repository
 	userRepository := repository2.NewUserRepository(db)
+	postRepository := repository2.NewPostRepository(db)
+	commentRepository := repository2.NewCommentRepository(db)
+	reactionRepository := repository2.NewReactionRepository(db)
+
+	//Service
 	userService := service2.NewUserService(userRepository)
+	postService := service2.NewPostService(
+		userRepository,
+		postRepository,
+		commentRepository,
+		reactionRepository,
+	)
+	commentService := service2.NewCommentService(
+		userRepository,
+		commentRepository,
+		reactionRepository,
+	)
+	reactionService := service2.NewReactionService(reactionRepository)
+
+	//Controller
 	userController := controller2.NewUserController(userService)
+	postController := controller2.NewPostController(postService)
+	commentController := controller2.NewCommentController(commentService)
+	reactionController := controller2.NewReactionController(reactionService)
+
+	//Routes
 	userRoutes := &routes2.UserRoutes{
 		UserController: userController,
 	}
-
-	//Reaction
-	reactionRepository := repository2.NewReactionRepository(db)
-	reactionService := service2.NewReactionService(reactionRepository)
-	reactionController := controller2.NewReactionController(reactionService)
-	reactionRoutes := &routes2.ReactionRoutes{
-		ReactionController: reactionController,
-	}
-
-	//Post
-	postRepository := repository2.NewPostRepository(db)
-	postService := service2.NewPostService(postRepository, reactionRepository)
-	postController := controller2.NewPostController(postService)
 	postRoutes := &routes2.PostRoutes{
 		PostController: postController,
 	}
-
-	//Comment
-	commentRepository := repository2.NewCommentRepository(db)
-	commentService := service2.NewCommentService(commentRepository, reactionRepository)
-	commentController := controller2.NewCommentController(commentService)
+	reactionRoutes := &routes2.ReactionRoutes{
+		ReactionController: reactionController,
+	}
 	commentRoutes := &routes2.CommentRoutes{
 		CommentController: commentController,
 	}

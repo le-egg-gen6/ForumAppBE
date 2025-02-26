@@ -13,3 +13,5 @@ func NewPostController(postService service.IPostService) *PostController {
 		PostService: postService,
 	}
 }
+
+func (pc *PostController) NewPost()
