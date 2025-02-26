@@ -1,16 +1,29 @@
 package models
 
+type ContentType int
+
 const (
-	TypeComment = iota
-	TypePost
+	TypeComment ContentType = 0
+	TypePost    ContentType = 1
+)
+
+type ReactionType string
+
+const (
+	Like  ReactionType = "like"
+	Love  ReactionType = "love"
+	Haha  ReactionType = "haha"
+	Wow   ReactionType = "wow"
+	Sad   ReactionType = "sad"
+	Angry ReactionType = "angry"
 )
 
 type ContentReaction struct {
-	ID           uint64 `gorm:"primary_key;auto_increment" json:"id"`
-	ContentID    uint64 `gorm:"" json:"content_id"`
-	ContentType  int    `gorm:"" json:"content_type"`
-	ReactionType string `gorm:"not null" json:"reaction_type"`
-	Count        int    `gorm:"" json:"count"`
+	ID           uint64       `gorm:"primaryKey;autoIncrement" json:"id"`
+	ContentID    uint64       `gorm:"not null" json:"content_id"`
+	ContentType  ContentType  `gorm:"not null" json:"content_type"`
+	ReactionType ReactionType `gorm:"not null" json:"reaction_type"`
+	Count        int          `gorm:"default:0" json:"count"`
 }
 
 func (ContentReaction) TableName() string {
