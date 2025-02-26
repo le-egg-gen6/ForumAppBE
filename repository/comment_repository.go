@@ -6,7 +6,7 @@ import (
 )
 
 type ICommentRepository interface {
-	CreateComment(comment *models.Comment) error
+	CreateComment(comment *models.Comment) (*models.Comment, error)
 	GetByID(id int64) (*models.Comment, error)
 	GetByPostID(id int64) ([]models.Comment, error)
 	UpdateComment(comment *models.Comment) error
@@ -27,8 +27,11 @@ func NewCommentRepository(db *gorm.DB) *CommentRepository {
 	}
 }
 
-func (r *CommentRepository) CreateComment(comment *models.Comment) error {
-	return r.db.Create(comment).Error
+func (r *CommentRepository) CreateComment(comment *models.Comment) (*models.Comment, error) {
+	if err := r.db.Create(comment).Error; err != nil {
+		return nil, err
+	}
+	return comment, nil
 }
 
 func (r *CommentRepository) GetByID(id int64) (*models.Comment, error) {
