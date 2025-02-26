@@ -1,10 +1,12 @@
 package service
 
 import (
+	"myproject/forum/dtos"
 	repository2 "myproject/forum/repository"
 )
 
 type IPostService interface {
+	CreatePost(postDTO *dtos.SimplePostDTO) (*dtos.PostDTO, error)
 }
 
 type PostService struct {
@@ -26,4 +28,8 @@ func NewPostService(
 		CommentRepository:  commentRepository,
 		ReactionRepository: reactionRepository,
 	}
+}
+
+func (ps *PostService) CreatePost(postDTO *dtos.SimplePostDTO) (*dtos.PostDTO, error) {
+
 }
