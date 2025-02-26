@@ -6,7 +6,7 @@ import (
 )
 
 type IPostRepository interface {
-	CreatePost(post *models.Post) error
+	CreatePost(post *models.Post) (*models.Post, error)
 	GetPostByID(id uint64) (*models.Post, error)
 	GetAllPosts() ([]models.Post, error)
 	UpdatePost(post *models.Post) error
@@ -27,8 +27,11 @@ func NewPostRepository(db *gorm.DB) *PostRepository {
 	}
 }
 
-func (r *PostRepository) CreatePost(post *models.Post) error {
-	return r.db.Create(post).Error
+func (r *PostRepository) CreatePost(post *models.Post) (*models.Post, error) {
+	if err := r.db.Create(post).Error; err != nil {
+		return nil, err
+	}
+	return post, nil
 }
 
 func (r *PostRepository) GetPostByID(id uint64) (*models.Post, error) {

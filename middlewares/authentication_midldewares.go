@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+const UserIDContextKey = "UserID"
+
 func AuthenticationMiddlewares() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenStr := util.ExtractTokenFromRequest(c)
@@ -31,7 +33,7 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", claims["sub"])
+		c.Set(UserIDContextKey, claims["sub"])
 		c.Next()
 	}
 }

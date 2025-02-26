@@ -9,7 +9,7 @@ type PostDTO struct {
 	Title       string        `json:"title"`
 	Content     string        `json:"content"`
 	Author      SimpleUserDTO `json:"author"`
-	CreatedAt   *time.Time    `json:"createdAt"`
+	CreatedAt   time.Time     `json:"createdAt"`
 	Reactions   []ReactionDTO `json:"reactions"`
 	TopComments []CommentDTO  `json:"topComments"`
 }

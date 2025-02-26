@@ -2,6 +2,7 @@ package service
 
 import (
 	"myproject/forum/dtos"
+	"myproject/forum/models"
 	repository2 "myproject/forum/repository"
 )
 
@@ -31,5 +32,25 @@ func NewPostService(
 }
 
 func (ps *PostService) CreatePost(postDTO *dtos.SimplePostDTO) (*dtos.PostDTO, error) {
+	post := &models.Post{}
+	post.AuthorID = postDTO.Author.ID
+	post.Title = postDTO.Title
+	post.Content = postDTO.Content
 
+	createdPost, err := ps.PostRepository.CreatePost(post)
+	if err != nil {
+		return nil, err
+	}
+
+	response := dtos.PostDTO{
+		ID:          createdPost.ID,
+		Title:       createdPost.Title,
+		Content:     createdPost.Content,
+		Author:      postDTO.Author,
+		CreatedAt:   createdPost.CreatedAt,
+		Reactions:   []dtos.ReactionDTO{}, // Assuming you might populate this later
+		TopComments: []dtos.CommentDTO{},  // Assuming you might populate this later
+	}
+
+	return &response, err
 }

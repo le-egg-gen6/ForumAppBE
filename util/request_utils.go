@@ -1,14 +1,13 @@
 package util
 
 import (
-	"context"
 	"github.com/gin-gonic/gin"
 	"myproject/forum/middlewares"
 	"strings"
 )
 
-func GetRequestID(ctx context.Context) string {
-	if id, ok := ctx.Value(middlewares.RequestIDKey).(string); ok {
+func GetRequestID(c *gin.Context) string {
+	if id, ok := c.Value(middlewares.RequestIDContextKey).(string); ok {
 		return id
 	}
 	return "unknown"
@@ -21,4 +20,11 @@ func ExtractTokenFromRequest(c *gin.Context) string {
 		return parts[1]
 	}
 	return ""
+}
+
+func GetCurrentContextUserID(c *gin.Context) uint64 {
+	if id, ok := c.Value(middlewares.UserIDContextKey).(uint64); ok {
+		return id
+	}
+	return -1
 }
