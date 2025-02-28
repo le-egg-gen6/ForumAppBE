@@ -22,15 +22,22 @@ func InitializeCloudinaryInstance(cfg *CloudinaryConfig) (*cloudinary.Cloudinary
 	return cloudinary.NewFromParams(cfg.CloudName, cfg.APISecret, cfg.APISecret)
 }
 
+var Instance *FileUploader
+
+func GetFileUploaderInstance() *FileUploader {
+	return Instance
+}
+
 func NewFileUploader() *FileUploader {
 	cfg, err := LoadCloudinaryConfig()
 	if err != nil {
 		//log
 	}
-	return &FileUploader{
+	Instance = &FileUploader{
 		Validator: validator.New(),
 		Config:    cfg,
 	}
+	return Instance
 }
 
 func (u *FileUploader) UploadFile(file dtos.File) (string, error) {

@@ -2,6 +2,7 @@ package di
 
 import (
 	"gorm.io/gorm"
+	"myproject/forum/cache/redis"
 	"myproject/forum/cloudinary"
 	config2 "myproject/forum/config"
 	controller2 "myproject/forum/controller"
@@ -15,28 +16,30 @@ type Container struct {
 	DB *gorm.DB
 
 	FileUploader *cloudinary.FileUploader
+	MailSender   *mail_sender.MailSender
+	RedisClient  *redis.RedisClient
 
-	MailSender *mail_sender.MailSender
-
-	UserRepository *repository2.UserRepository
-	UserService    *service2.UserService
-	UserController *controller2.UserController
-	UserRoutes     *routes2.UserRoutes
-
-	PostRepository *repository2.PostRepository
-	PostService    *service2.PostService
-	PostController *controller2.PostController
-	PostRoutes     *routes2.PostRoutes
-
-	CommentRepository *repository2.CommentRepository
-	CommentService    *service2.CommentService
-	CommentController *controller2.CommentController
-	CommentRoutes     *routes2.CommentRoutes
-
+	UserRepository     *repository2.UserRepository
+	PostRepository     *repository2.PostRepository
+	CommentRepository  *repository2.CommentRepository
 	ReactionRepository *repository2.ReactionRepository
-	ReactionService    *service2.ReactionService
+
+	UserService     *service2.UserService
+	PostService     *service2.PostService
+	CommentService  *service2.CommentService
+	ReactionService *service2.ReactionService
+
+	AuthController     *controller2.AuthController
+	UserController     *controller2.UserController
+	PostController     *controller2.PostController
+	CommentController  *controller2.CommentController
 	ReactionController *controller2.ReactionController
-	ReactionRoutes     *routes2.ReactionRoutes
+
+	AuthRoutes     *routes2.AuthRoutes
+	UserRoutes     *routes2.UserRoutes
+	PostRoutes     *routes2.PostRoutes
+	CommentRoutes  *routes2.CommentRoutes
+	ReactionRoutes *routes2.ReactionRoutes
 }
 
 func InitializeContainer(cfg *config2.Config) *Container {
@@ -47,6 +50,9 @@ func InitializeContainer(cfg *config2.Config) *Container {
 
 	//Mail Sender
 	mailSender := mail_sender.NewMailSender()
+
+	//Redis Client
+	redisClient := redis.NewRedisClient(redis.LoadRedisConfig(cfg))
 
 	//Repository
 	userRepository := repository2.NewUserRepository(db)
@@ -70,12 +76,16 @@ func InitializeContainer(cfg *config2.Config) *Container {
 	reactionService := service2.NewReactionService(reactionRepository)
 
 	//Controller
+	authController := controller2.NewAuthController(userService)
 	userController := controller2.NewUserController(userService)
 	postController := controller2.NewPostController(postService)
 	commentController := controller2.NewCommentController(commentService)
 	reactionController := controller2.NewReactionController(reactionService)
 
 	//Routes
+	authRoutes := &routes2.AuthRoutes{
+		AuthController: authController,
+	}
 	userRoutes := &routes2.UserRoutes{
 		UserController: userController,
 	}
@@ -93,28 +103,30 @@ func InitializeContainer(cfg *config2.Config) *Container {
 		DB: db,
 
 		FileUploader: fileUploader,
-
-		MailSender: mailSender,
+		MailSender:   mailSender,
+		RedisClient:  redisClient,
 
 		ReactionRepository: reactionRepository,
-		ReactionService:    reactionService,
+		UserRepository:     userRepository,
+		PostRepository:     postRepository,
+		CommentRepository:  commentRepository,
+
+		UserService:     userService,
+		PostService:     postService,
+		CommentService:  commentService,
+		ReactionService: reactionService,
+
+		AuthController:     authController,
+		UserController:     userController,
+		PostController:     postController,
+		CommentController:  commentController,
 		ReactionController: reactionController,
-		ReactionRoutes:     reactionRoutes,
 
-		UserRepository: userRepository,
-		UserService:    userService,
-		UserController: userController,
+		AuthRoutes:     authRoutes,
 		UserRoutes:     userRoutes,
-
-		PostRepository: postRepository,
-		PostService:    postService,
-		PostController: postController,
 		PostRoutes:     postRoutes,
-
-		CommentRepository: commentRepository,
-		CommentService:    commentService,
-		CommentController: commentController,
-		CommentRoutes:     commentRoutes,
+		CommentRoutes:  commentRoutes,
+		ReactionRoutes: reactionRoutes,
 	}
 }
 

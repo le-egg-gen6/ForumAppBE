@@ -18,6 +18,7 @@ func main() {
 	container := di.InitializeContainer(cfg)
 
 	routesModules := []router.Router{
+		container.AuthRoutes,
 		container.UserRoutes,
 		container.PostRoutes,
 		container.CommentRoutes,

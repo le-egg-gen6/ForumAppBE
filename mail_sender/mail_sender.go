@@ -15,14 +15,17 @@ type MailSender struct {
 	Config *MailSenderConfig
 }
 
+var Instance *MailSender
+
 func NewMailSender() *MailSender {
 	cfg, err := LoadMailSenderConfig()
 	if err != nil {
 		//
 	}
-	return &MailSender{
+	Instance = &MailSender{
 		Config: cfg,
 	}
+	return Instance
 }
 
 const MailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
