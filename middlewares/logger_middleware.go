@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"myproject/forum/logger"
+	"myproject/forum/util"
 	"time"
 )
 
@@ -13,6 +14,7 @@ func LoggerMiddleware() gin.HandlerFunc {
 		c.Next()
 		if logger.LogInstance != nil {
 			logger.LogInstance.Info("HTTP Request",
+				zap.String(RequestIDContextKey, util.GetRequestID(c)),
 				zap.String("method", c.Request.Method),
 				zap.String("url", c.Request.URL.Path),
 				zap.Int("status", c.Writer.Status()),

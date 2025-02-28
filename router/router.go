@@ -18,9 +18,9 @@ func InitializeRouter(cfg *config.Config, routerModules []Router) *gin.Engine {
 	api := router.Group(
 		apiPrefix,
 		middlewares.RecoverMiddleware(),
+		middlewares.RequestIDMiddleware(),
 		middlewares.LoggerMiddleware(),
 		middlewares.CORSMiddleware(),
-		middlewares.RequestIDMiddleware(),
 	)
 
 	for _, module := range routerModules {
