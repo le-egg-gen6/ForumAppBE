@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"myproject/forum/config"
+	"myproject/forum/middlewares"
 )
 
 type Router interface {
@@ -14,7 +15,13 @@ func InitializeRouter(cfg *config.Config, routerModules []Router) *gin.Engine {
 
 	apiPrefix := "/api/" + cfg.API_VERSION
 
-	api := router.Group(apiPrefix)
+	api := router.Group(
+		apiPrefix,
+		middlewares.RecoverMiddleware(),
+		middlewares.LoggerMiddleware(),
+		middlewares.CORSMiddleware(),
+		middlewares.RequestIDMiddleware(),
+	)
 
 	for _, module := range routerModules {
 		module.RegisterRoutes(api)
