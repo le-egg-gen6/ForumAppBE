@@ -2,6 +2,7 @@ package util
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"strconv"
 	"time"
 )
 
@@ -12,20 +13,22 @@ const ExpiredTimeInHourRemember = 24 * 7
 func GenerateToken(userID uint64, remember bool) (string, error) {
 	expiredTime := time.Now()
 	if remember {
-		expiredTime.Add(time.Hour * ExpiredTimeInHourRemember)
+		expiredTime = expiredTime.Add(time.Hour * ExpiredTimeInHourRemember)
 	} else {
-		expiredTime.Add(time.Hour * ExpiredTimeInHour)
+		expiredTime = expiredTime.Add(time.Hour * ExpiredTimeInHour)
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": userID,
-		"exp": expiredTime.Unix(),
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
+		Subject:   strconv.FormatUint(userID, 10),
+		ExpiresAt: jwt.NewNumericDate(expiredTime),
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	})
 
 	return token.SignedString([]byte(SecretToken))
 }
 
 func ValidateToken(tokenString string) (*jwt.Token, error) {
-	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	return jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.ErrSignatureInvalid
 		}

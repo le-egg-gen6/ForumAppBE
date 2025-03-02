@@ -26,14 +26,14 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 			return
 		}
 
-		claims, ok := jwtToken.Claims.(jwt.MapClaims)
+		claims, ok := jwtToken.Claims.(*jwt.RegisteredClaims)
 		if !ok {
 			shared.SendError(c, http.StatusBadRequest, "Invalid credentials")
 			c.Abort()
 			return
 		}
 
-		c.Set(UserIDContextKey, claims["sub"])
+		c.Set(UserIDContextKey, claims.Subject)
 		c.Next()
 	}
 }

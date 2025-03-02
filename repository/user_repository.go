@@ -6,8 +6,9 @@ import (
 )
 
 type IUserRepository interface {
-	Create(user *models.User) error
+	Create(user *models.User) (*models.User, error)
 	FindByID(id uint64) (*models.User, error)
+	FindByUsername(username string) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Update(user *models.User) error
 	Delete(id uint64) error
@@ -28,13 +29,24 @@ func NewUserRepository(db *gorm.DB) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Create(user *models.User) error {
-	return r.db.Create(user).Error
+func (r *UserRepository) Create(user *models.User) (*models.User, error) {
+	if err := r.db.Create(user).Error; err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *UserRepository) FindByID(id uint64) (*models.User, error) {
 	var user models.User
 	if err := r.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
+	var user models.User
+	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil

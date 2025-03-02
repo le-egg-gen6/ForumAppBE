@@ -7,6 +7,7 @@ type AuthDTO struct {
 type LoginDTO struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Remember bool   `json:"remember"`
 }
 
 type RegisterDTO struct {

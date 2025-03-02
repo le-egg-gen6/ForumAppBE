@@ -1,14 +1,14 @@
 package service
 
 import (
-	"errors"
 	"myproject/forum/models"
 	"myproject/forum/repository"
 )
 
 type IUserService interface {
-	CreateUser(user *models.User) error
+	CreateUser(user *models.User) (*models.User, error)
 	GetUserByID(id uint64) (*models.User, error)
+	GetUserByUsername(username string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
 	UpdateUser(user *models.User) error
 	DeleteUser(id uint64) error
@@ -25,19 +25,16 @@ func NewUserService(userRepository repository.IUserRepository) *UserService {
 	}
 }
 
-func (s *UserService) CreateUser(user *models.User) error {
-	if user.Email == "" || user.Password == "" || user.Username == "" {
-		return errors.New("Missing required fields")
-	}
-	existedUser, _ := s.GetUserByEmail(user.Email)
-	if existedUser != nil {
-		return errors.New("User already exists")
-	}
+func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
 	return s.UserRepository.Create(user)
 }
 
 func (s *UserService) GetUserByID(id uint64) (*models.User, error) {
 	return s.UserRepository.FindByID(id)
+}
+
+func (s *UserService) GetUserByUsername(username string) (*models.User, error) {
+	return s.UserRepository.FindByUsername(username)
 }
 
 func (s *UserService) GetUserByEmail(email string) (*models.User, error) {
