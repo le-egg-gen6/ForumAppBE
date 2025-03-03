@@ -70,10 +70,16 @@ func (ac *AuthController) Register(c *gin.Context) {
 		return
 	}
 
+	hashedPassword, err := util.HashPassword(registerDTO.Password)
+	if err != nil {
+		shared.SendError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	user := &models.User{
 		Username: registerDTO.Username,
 		Email:    registerDTO.Email,
-		Password: registerDTO.Password,
+		Password: hashedPassword,
 	}
 
 	user, err = ac.UserService.CreateUser(user)
