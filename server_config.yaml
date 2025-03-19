@@ -1,6 +1,8 @@
 server:
   api_version: "v1"
   port: 8045
+  tcp_port: 10010
+  udp_port: 11000
 
 database:
   username: "forum"

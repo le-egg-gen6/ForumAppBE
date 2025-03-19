@@ -7,6 +7,8 @@ import (
 type Config struct {
 	API_VERSION    string
 	PORT           int
+	TCP_PORT       int
+	UDP_PORT       int
 	DB_USERNAME    string
 	DB_PASSWORD    string
 	DB_NAME        string
@@ -30,6 +32,8 @@ func LoadConfig() *Config {
 	return &Config{
 		API_VERSION:    viper.GetString("server.api_version"),
 		PORT:           viper.GetInt("server.port"),
+		TCP_PORT:       viper.GetInt("server.tcp_port"),
+		UDP_PORT:       viper.GetInt("server.udp_port"),
 		DB_USERNAME:    viper.GetString("database.username"),
 		DB_PASSWORD:    viper.GetString("database.password"),
 		DB_NAME:        viper.GetString("database.name"),
