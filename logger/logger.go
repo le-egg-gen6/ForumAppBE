@@ -96,12 +96,16 @@ var LogInstance *zap.Logger
 func InitializeLogger() {
 	logCfg, err := LoadLoggerConfig()
 	if err != nil {
-		//
+		panic("Logger configuration file not found")
 	}
 	LogInstance, err = InitializeNewLogInstance(logCfg)
 	if err != nil {
-		//
+		panic("Logger not initialized")
 	}
+}
+
+func GetInstance() *zap.Logger {
+	return LogInstance
 }
 
 func CleanupQueuedLogs() {

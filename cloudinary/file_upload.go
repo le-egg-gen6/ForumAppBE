@@ -31,7 +31,7 @@ func GetFileUploaderInstance() *FileUploader {
 func NewFileUploader() *FileUploader {
 	cfg, err := LoadCloudinaryConfig()
 	if err != nil {
-		//log
+		panic("Cloudinary configuration file not found")
 	}
 	Instance = &FileUploader{
 		Validator: validator.New(),

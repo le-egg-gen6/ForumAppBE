@@ -20,7 +20,7 @@ var Instance *MailSender
 func NewMailSender() *MailSender {
 	cfg, err := LoadMailSenderConfig()
 	if err != nil {
-		//
+		panic("Mail sender configuration file not found")
 	}
 	Instance = &MailSender{
 		Config: cfg,
