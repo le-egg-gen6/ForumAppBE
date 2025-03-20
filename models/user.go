@@ -7,7 +7,7 @@ type User struct {
 	Username  string    `gorm:"size:255;not null;unique" json:"username"`
 	Email     string    `gorm:"size:255;not null;unique" json:"email"`
 	Password  string    `gorm:"size:255;not null" json:"password"`
-	AvatarUrl string    `gorm:"size:255;null" json:"avatar_url"`
+	Avatar    Image     `gorm:"foreignKey:UserID" json:"avatar"`
 	CreatedAt time.Time `gorm:"autoCreateTime:milli" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime:milli" json:"updated_at"`
 	Deleted   bool      `gorm:"default:false" json:"deleted"`
