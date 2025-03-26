@@ -1,12 +1,12 @@
 package controller
 
 import (
+	"forum/dtos"
+	"forum/models"
+	"forum/service"
+	"forum/shared"
+	"forum/util"
 	"github.com/gin-gonic/gin"
-	"myproject/forum/dtos"
-	"myproject/forum/models"
-	"myproject/forum/service"
-	"myproject/forum/shared"
-	"myproject/forum/util"
 	"net/http"
 )
 

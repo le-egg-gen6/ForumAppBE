@@ -1,8 +1,8 @@
 package repository
 
 import (
+	"forum/models"
 	"gorm.io/gorm"
-	"myproject/forum/models"
 )
 
 type ICommentRepository interface {

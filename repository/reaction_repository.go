@@ -2,8 +2,8 @@ package repository
 
 import (
 	"errors"
+	"forum/models"
 	"gorm.io/gorm"
-	"myproject/forum/models"
 )
 
 type IReactionRepository interface {

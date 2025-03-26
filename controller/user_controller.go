@@ -1,9 +1,9 @@
 package controller
 
 import (
+	"forum/models"
+	"forum/service"
 	"github.com/gin-gonic/gin"
-	"myproject/forum/models"
-	"myproject/forum/service"
 	"net/http"
 )
 

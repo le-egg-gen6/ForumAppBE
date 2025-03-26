@@ -1,18 +1,18 @@
 package middlewares
 
 import (
+	"forum/constant"
+	"forum/shared"
+	"forum/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"myproject/forum/shared"
-	"myproject/forum/util"
 	"net/http"
+	"strings"
 )
-
-const UserIDContextKey = "UserID"
 
 func AuthenticationMiddlewares() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := util.ExtractTokenFromRequest(c)
+		tokenStr := ExtractTokenFromRequest(c)
 		if tokenStr == "" {
 			shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
 			c.Abort()
@@ -33,7 +33,16 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 			return
 		}
 
-		c.Set(UserIDContextKey, claims.Subject)
+		c.Set(constant.UserIDContextKey, claims.Subject)
 		c.Next()
 	}
+}
+
+func ExtractTokenFromRequest(c *gin.Context) string {
+	bearerToken := c.Request.Header.Get("Authorization")
+	parts := strings.Split(bearerToken, " ")
+	if len(parts) == 2 && parts[0] == "Bearer" {
+		return parts[1]
+	}
+	return ""
 }

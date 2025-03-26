@@ -12,7 +12,7 @@ type LoggerConfig struct {
 }
 
 func LoadLoggerConfig() (*LoggerConfig, error) {
-	viper.SetConfigName("log_config")
+	viper.SetConfigName("server_config")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 
@@ -21,9 +21,9 @@ func LoadLoggerConfig() (*LoggerConfig, error) {
 	}
 
 	return &LoggerConfig{
-		LogLevel:    viper.GetString("log_level"),
-		FilePattern: viper.GetString("file_pattern"),
-		MaxSize:     viper.GetInt("max_size"),
-		BaseLogDir:  viper.GetString("base_log_dir"),
+		LogLevel:    viper.GetString("log.log_level"),
+		FilePattern: viper.GetString("log.file_pattern"),
+		MaxSize:     viper.GetInt("log.max_size"),
+		BaseLogDir:  viper.GetString("log.base_log_dir"),
 	}, nil
 }

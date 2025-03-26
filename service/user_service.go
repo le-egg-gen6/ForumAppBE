@@ -1,8 +1,8 @@
 package service
 
 import (
-	"myproject/forum/models"
-	"myproject/forum/repository"
+	"forum/models"
+	"forum/repository"
 )
 
 type IUserService interface {

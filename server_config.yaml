@@ -1,8 +1,12 @@
-server:
+http_server:
   api_version: "v1"
   port: 8045
-  tcp_port: 10010
-  udp_port: 11000
+
+tcp_server:
+  port: 10010
+
+udp_server:
+  port: 11000
 
 database:
   username: "forum"
@@ -10,3 +14,27 @@ database:
   name: "forum"
   host: "localhost"
   port: 6789
+
+redis:
+  password: forum
+  host: localhost
+  port: 9999
+  database: 0
+
+cloudinary:
+  cloud_name: "duppvsny0"
+  api_key: "453378772488287"
+  api_secret: "POkU1uLE5zEchkpf9MvrjimdWm4"
+  upload_folder: "forum_app"
+
+mail:
+  smtp_host: "smtp.gmail.com"
+  smtp_port: 587
+  smtp_username: "nguyenle.workspace@gmail.com"
+  smtp_password: "cwpa uyfq dlzn iymi"
+
+log:
+  log_level: "info"
+  file_pattern: "2006-01-02"
+  max_size: 10
+  base_log_dir: "logs"

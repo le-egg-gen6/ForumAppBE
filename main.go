@@ -2,62 +2,49 @@ package main
 
 import (
 	"fmt"
-	"myproject/forum/config"
-	"myproject/forum/di"
-	"myproject/forum/logger"
-	"myproject/forum/router"
-	"myproject/forum/tcp"
-	"net/http"
+	"forum/3rd_party_service/cloudinary"
+	"forum/3rd_party_service/mail_sender"
+	"forum/3rd_party_service/redis"
+	"forum/database"
+	"forum/logger"
+	"forum/server_http"
 )
 
 func main() {
-	logger.InitializeLogger()
-	logger.GetInstance().Info("================================================================")
-	logger.GetInstance().Info("=====================Application Starting=======================")
-	logger.GetInstance().Info("================================================================")
+	Initialize()
 	defer CleanupUnfinishedTasks()
 
-	cfg := config.LoadConfig()
+	logger.GetLogInstance().Info("================================================================")
+	logger.GetLogInstance().Info("=====================Application Starting=======================")
+	logger.GetLogInstance().Info("================================================================")
 
-	container := di.InitializeContainer(cfg)
-
-	routesModules := []router.Router{
-		container.AuthRoutes,
-		container.UserRoutes,
-		container.PostRoutes,
-		container.CommentRoutes,
-		container.ReactionRoutes,
-	}
-
-	initializeRouter := router.InitializeRouter(cfg, routesModules)
 	go func() {
-		logger.GetInstance().Info(fmt.Sprintf("HTTP Server running on port: %d", cfg.PORT))
-		if err := initializeRouter.Run(fmt.Sprintf(":%d", cfg.PORT)); err != nil {
-			logger.GetInstance().Error(fmt.Sprintf("Error starting HTTP server: %s", err))
-			panic("Error starting HTTP server")
+		httpServer := server_http.GetHTTPServer()
+		logger.GetLogInstance().Info(fmt.Sprintf("HTTP Server running on port: %d", httpServer.Config.Port))
+		if err := httpServer.Run(); err != nil {
+			logger.GetLogInstance().Error(fmt.Sprintf("Error starting HTTP server: %s", err))
 		}
 	}()
 
-	socketServer := tcp.NewSocketServer()
-	go func() {
-		http.Handle("/socket.io/", socketServer)
-		logger.GetInstance().Info(fmt.Sprintf("Socket.IO server running on port: %d", cfg.TCP_PORT))
-		if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.TCP_PORT), nil); err != nil {
-			logger.GetInstance().Error(fmt.Sprintf("Error starting Socket.IO server: %s", err))
-			panic("Error starting Socket.IO server")
-		}
-	}()
-	logger.GetInstance().Info("================================================================")
-	logger.GetInstance().Info("=====================Application Started========================")
-	logger.GetInstance().Info("================================================================")
+	logger.GetLogInstance().Info("================================================================")
+	logger.GetLogInstance().Info("=====================Application Started========================")
+	logger.GetLogInstance().Info("================================================================")
 
 	select {}
 }
 
+func Initialize() {
+	logger.InitializeLogger()
+	cloudinary.InitializeFileUploader()
+	mail_sender.InitializeMailSender()
+	redis.InitializeRedis()
+	database.InitializeDatabaseConnection()
+	server_http.InitializeHTTPServer()
+}
+
 func CleanupUnfinishedTasks() {
-	logger.GetInstance().Info("================================================================")
-	logger.GetInstance().Info("=======================Application Stop=========================")
-	logger.GetInstance().Info("================================================================")
-	di.CleanupContainer()
+	logger.GetLogInstance().Info("================================================================")
+	logger.GetLogInstance().Info("=======================Application Stop=========================")
+	logger.GetLogInstance().Info("================================================================")
 	logger.CleanupQueuedLogs()
 }

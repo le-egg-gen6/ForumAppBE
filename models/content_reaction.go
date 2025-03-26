@@ -3,6 +3,7 @@ package models
 type ContentType int
 
 const (
+	TypeNothing ContentType = -1
 	TypeComment ContentType = 0
 	TypePost    ContentType = 1
 )
@@ -21,7 +22,7 @@ const (
 type ContentReaction struct {
 	ID           uint64       `gorm:"primaryKey;autoIncrement" json:"id"`
 	ContentID    uint64       `gorm:"not null" json:"content_id"`
-	ContentType  ContentType  `gorm:"not null" json:"content_type"`
+	ContentType  ContentType  `gorm:"default:-1;not null" json:"content_type"`
 	ReactionType ReactionType `gorm:"not null" json:"reaction_type"`
 	Count        int          `gorm:"default:0" json:"count"`
 }

@@ -1,8 +1,8 @@
 package middlewares
 
 import (
+	"forum/shared"
 	"github.com/gin-gonic/gin"
-	"myproject/forum/shared"
 	"net/http"
 )
 

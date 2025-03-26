@@ -1,7 +1,7 @@
 package service
 
 import (
-	"myproject/forum/repository"
+	"forum/repository"
 )
 
 type IReactionService interface {

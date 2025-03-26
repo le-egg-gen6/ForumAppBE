@@ -1,9 +1,9 @@
 package service
 
 import (
-	"myproject/forum/dtos"
-	"myproject/forum/models"
-	repository2 "myproject/forum/repository"
+	"forum/dtos"
+	"forum/models"
+	repository2 "forum/repository"
 )
 
 type IPostService interface {

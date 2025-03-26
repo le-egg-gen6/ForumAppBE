@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"myproject/forum/service"
+	"forum/service"
 )
 
 type ReactionController struct {
