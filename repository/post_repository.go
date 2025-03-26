@@ -17,14 +17,20 @@ type PostRepository struct {
 	db *gorm.DB
 }
 
-func NewPostRepository(db *gorm.DB) *PostRepository {
+var PostRepositoryInstance *PostRepository
+
+func InitializePostRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.Post{})
 	if err != nil {
 		//
 	}
-	return &PostRepository{
+	PostRepositoryInstance = &PostRepository{
 		db: db,
 	}
+}
+
+func GetPostRepositoryInstance() *PostRepository {
+	return PostRepositoryInstance
 }
 
 func (r *PostRepository) CreatePost(post *models.Post) (*models.Post, error) {

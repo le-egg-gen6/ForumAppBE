@@ -16,14 +16,20 @@ type ReactionRepository struct {
 	db *gorm.DB
 }
 
-func NewReactionRepository(db *gorm.DB) *ReactionRepository {
+var ReactionRepositoryInstance *ReactionRepository
+
+func InitializeReactionRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.ContentReaction{})
 	if err != nil {
 		//
 	}
-	return &ReactionRepository{
+	ReactionRepositoryInstance = &ReactionRepository{
 		db: db,
 	}
+}
+
+func GetReactionRepositoryInstance() *ReactionRepository {
+	return ReactionRepositoryInstance
 }
 
 func (r *ReactionRepository) FindByType(contentId uint64, contentType int) ([]models.ContentReaction, error) {

@@ -7,6 +7,7 @@ import (
 	"forum/3rd_party_service/redis"
 	"forum/database"
 	"forum/logger"
+	"forum/repository"
 	"forum/server_http"
 )
 
@@ -39,6 +40,7 @@ func Initialize() {
 	mail_sender.InitializeMailSender()
 	redis.InitializeRedis()
 	database.InitializeDatabaseConnection()
+	repository.InitializeRepository(database.GetDatabaseConnection())
 	server_http.InitializeHTTPServer()
 }
 

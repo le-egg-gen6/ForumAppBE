@@ -17,14 +17,20 @@ type CommentRepository struct {
 	db *gorm.DB
 }
 
-func NewCommentRepository(db *gorm.DB) *CommentRepository {
+var CommentRepositoryInstance *CommentRepository
+
+func InitializeCommentRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.Comment{})
 	if err != nil {
 		//
 	}
-	return &CommentRepository{
+	CommentRepositoryInstance = &CommentRepository{
 		db: db,
 	}
+}
+
+func GetCommentRepositoryInstance() *CommentRepository {
+	return CommentRepositoryInstance
 }
 
 func (r *CommentRepository) CreateComment(comment *models.Comment) (*models.Comment, error) {

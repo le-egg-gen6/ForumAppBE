@@ -19,14 +19,20 @@ type UserRepository struct {
 	db *gorm.DB
 }
 
-func NewUserRepository(db *gorm.DB) *UserRepository {
+var UserRepositoryInstance *UserRepository
+
+func InitializeUserRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
 		//
 	}
-	return &UserRepository{
+	UserRepositoryInstance = &UserRepository{
 		db: db,
 	}
+}
+
+func GetUserRepositoryInstance() *UserRepository {
+	return UserRepositoryInstance
 }
 
 func (r *UserRepository) Create(user *models.User) (*models.User, error) {
