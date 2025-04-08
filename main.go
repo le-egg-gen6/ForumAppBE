@@ -9,7 +9,7 @@ import (
 	"forum/handler"
 	"forum/logger"
 	"forum/repository"
-	"forum/server_http"
+	"forum/server/http"
 )
 
 func main() {
@@ -21,7 +21,7 @@ func main() {
 	logger.GetLogInstance().Info("================================================================")
 
 	go func() {
-		httpServer := server_http.GetHTTPServer()
+		httpServer := http.GetHTTPServer()
 		logger.GetLogInstance().Info(fmt.Sprintf("HTTP Server running on port: %d", httpServer.Config.Port))
 		if err := httpServer.Run(); err != nil {
 			logger.GetLogInstance().Error(fmt.Sprintf("Error starting HTTP server: %s", err))
@@ -42,8 +42,8 @@ func Initialize() {
 	redis.InitializeRedis()
 	database.InitializeDatabaseConnection()
 	repository.InitializeRepository(database.GetDatabaseConnection())
-	server_http.InitializeHTTPServer()
-	handler.InitializeHandler(server_http.GetHTTPServer().RouterGroup)
+	http.InitializeHTTPServer()
+	handler.InitializeHandler(http.GetHTTPServer().RouterGroup)
 }
 
 func CleanupUnfinishedTasks() {

@@ -1,4 +1,4 @@
-package server_tcp
+package tcp
 
 import socketio "github.com/googollee/go-socket.io"
 
