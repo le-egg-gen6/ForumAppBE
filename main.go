@@ -6,6 +6,7 @@ import (
 	"forum/3rd_party_service/mail_sender"
 	"forum/3rd_party_service/redis"
 	"forum/database"
+	"forum/handler"
 	"forum/logger"
 	"forum/repository"
 	"forum/server_http"
@@ -42,6 +43,7 @@ func Initialize() {
 	database.InitializeDatabaseConnection()
 	repository.InitializeRepository(database.GetDatabaseConnection())
 	server_http.InitializeHTTPServer()
+	handler.InitializeHandler(server_http.GetHTTPServer().RouterGroup)
 }
 
 func CleanupUnfinishedTasks() {

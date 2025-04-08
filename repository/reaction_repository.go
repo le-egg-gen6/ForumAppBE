@@ -47,8 +47,8 @@ func (r *ReactionRepository) IncreaseReaction(contentId uint64, contentType int,
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			reaction = models.ContentReaction{
 				ContentID:    contentId,
-				ContentType:  contentType,
-				ReactionType: reactionType,
+				ContentType:  models.ContentType(contentType),
+				ReactionType: models.ReactionType(reactionType),
 				Count:        1,
 			}
 			if err := r.db.Create(&reaction).Error; err != nil {
