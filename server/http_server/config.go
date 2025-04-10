@@ -1,4 +1,4 @@
-package http
+package http_server
 
 import "github.com/spf13/viper"
 

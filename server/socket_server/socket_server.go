@@ -1,4 +1,4 @@
-package socket
+package socket_server
 
 import (
 	"fmt"
