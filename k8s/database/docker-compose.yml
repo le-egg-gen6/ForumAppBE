@@ -1,0 +1,105 @@
+version: "3.8"
+
+services:
+  postgres-master:
+    image: postgres:15
+    container_name: postgres-master
+    environment:
+      POSTGRES_USER: forum
+      POSTGRES_PASSWORD: forum
+      POSTGRES_DB: forum
+      REPLICATION_USER: replicator
+      REPLICATION_PASSWORD: replpass
+    volumes:
+      - postgres-master-data:/var/lib/postgresql/data
+      - ./scripts-master/init-master.sh:/docker-entrypoint-initdb.d/init-master.sh
+      - ./scripts-master/healthcheck.sh:/usr/local/bin/healthcheck.sh
+    ports:
+      - "6780:5432"
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: always
+
+  postgres-slave:
+    image: postgres:15
+    container_name: postgres-slave
+    environment:
+      POSTGRES_USER: forum
+      POSTGRES_PASSWORD: forum
+      POSTGRES_DB: forum
+      REPLICATION_USER: replicator
+      REPLICATION_PASSWORD: replpass
+      MASTER_HOST: postgres-master
+      PROMOTE_FILE: /tmp/promote_to_master
+    volumes:
+      - postgres-slave-data:/var/lib/postgresql/data
+      - ./scripts-slave/init-slave.sh:/docker-entrypoint-initdb.d/init-slave.sh
+      - ./scripts-slave/promote-to-master.sh:/usr/local/bin/promote-to-master.sh
+      - ./scripts-slave/revert-to-slave.sh:/usr/local/bin/revert-to-slave.sh
+      - ./scripts-slave/check-master.sh:/usr/local/bin/check-master.sh
+    ports:
+      - "6781:5432"
+    depends_on:
+      - postgres-master
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "forum"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+    command: >
+      bash -c "
+        echo 'Starting slave with monitoring...' &&
+        /usr/local/bin/check-master.sh &
+        docker-entrypoint.sh postgres
+      "
+  
+  
+  
+
+  pgpool:
+    image: bitnami/pgpool:4
+    container_name: pgpool
+    ports:
+      - "6789:5432"
+    environment:
+      PGPOOL_ADMIN_USERNAME: ledeptraivl
+      PGPOOL_ADMIN_PASSWORD: ledeptraivl
+      PGPOOL_POSTGRES_USERNAME: forum
+      PGPOOL_POSTGRES_PASSWORD: forum
+      PGPOOL_SR_CHECK_USER: forum
+      PGPOOL_SR_CHECK_PASSWORD: forum
+      PGPOOL_BACKEND_NODES: 0:postgres-master:5432,1:postgres-slave:5432
+      PGPOOL_BACKEND_APPLICATION_NAMES: master,slave
+      PGPOOL_ENABLE_LDAP: no
+      PGPOOL_POSTGRES_CUSTOM_USERS: forum
+      PGPOOL_POSTGRES_CUSTOM_PASSWORDS: forum
+      PGPOOL_ENABLE_LOAD_BALANCING: yes
+      PGPOOL_ENABLE_STATEMENT_LOAD_BALANCING: yes
+      PGPOOL_WRITE_HOSTGROUP: 0
+      PGPOOL_READ_HOSTGROUP: 1
+      PGPOOL_LOAD_BALANCE_MODE: 'on'
+      PGPOOL_DEFAULT_POOL_SIZE: 20
+      PGPOOL_HEALTH_CHECK_PERIOD: 10
+      PGPOOL_HEALTH_CHECK_TIMEOUT: 5
+      PGPOOL_HEALTH_CHECK_MAX_RETRIES: 3
+      PGPOOL_HEALTH_CHECK_RETRY_DELAY: 1
+      PGPOOL_FAILOVER_ON_BACKEND_ERROR: 'on'
+      PGPOOL_RECOVERY_1ST_STAGE_COMMAND: ''
+      PGPOOL_BACKEND_WEIGHT_0: 0.2
+      PGPOOL_BACKEND_WEIGHT_1: 0.8
+      PGPOOL_FAIL_OVER_ON_BACKEND_ERROR: 'on'
+      PGPOOL_SEARCH_PRIMARY_NODE_TIMEOUT: 10
+    depends_on:
+      - postgres-master
+      - postgres-slave
+    restart: always
+
+
+volumes:
+  postgres-master-data:
+  postgres-slave-data:
