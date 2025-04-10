@@ -11,15 +11,18 @@ import (
 	"forum/repository"
 	"forum/server/http"
 	"forum/utils"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 func main() {
 	Initialize()
-	defer CleanupUnfinishedTasks()
 
-	logger.GetLogInstance().Info("================================================================")
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
+
 	logger.GetLogInstance().Info("=====================Application Starting=======================")
-	logger.GetLogInstance().Info("================================================================")
 
 	go func() {
 		httpServer := http.GetHTTPServer()
@@ -29,11 +32,14 @@ func main() {
 		}
 	}()
 
-	logger.GetLogInstance().Info("================================================================")
 	logger.GetLogInstance().Info("=====================Application Started========================")
-	logger.GetLogInstance().Info("================================================================")
 
-	select {}
+	sig := <-sigChan
+	logger.GetLogInstance().Info(fmt.Sprintf("Received signal: %v. Initiating shutdown...", sig))
+
+	CleanupUnfinishedTasks()
+
+	os.Exit(0)
 }
 
 func Initialize() {
@@ -48,9 +54,10 @@ func Initialize() {
 }
 
 func CleanupUnfinishedTasks() {
+	logger.GetLogInstance().Info("==================== Application Stopping ======================")
+
 	utils.ShutdownPool()
-	logger.GetLogInstance().Info("================================================================")
-	logger.GetLogInstance().Info("=======================Application Stop=========================")
-	logger.GetLogInstance().Info("================================================================")
 	logger.CleanupQueuedLogs()
+
+	logger.GetLogInstance().Info("===================== Application Stopped ======================")
 }
