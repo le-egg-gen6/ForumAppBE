@@ -1,9 +1,14 @@
 http_server:
   api_version: "v1"
   port: 8045
+  read_timeout_sec: 30
+  write_timeout_sec: 30
+  shutdown_timeout_sec: 10
 
 tcp_server:
   port: 10010
+  ping_timeout_sec: 15
+  ping_interval_sec: 5
 
 udp_server:
   port: 11000

@@ -3,8 +3,11 @@ package http
 import "github.com/spf13/viper"
 
 type HTTPServerConfig struct {
-	APIVersion string
-	Port       int
+	APIVersion         string
+	Port               int
+	ReadTimeoutSec     int
+	WriteTimeoutSec    int
+	ShutdownTimeoutSec int
 }
 
 func LoadHTTPServerConfig() (*HTTPServerConfig, error) {
@@ -17,7 +20,10 @@ func LoadHTTPServerConfig() (*HTTPServerConfig, error) {
 	}
 
 	return &HTTPServerConfig{
-		APIVersion: viper.GetString("http_server.api_version"),
-		Port:       viper.GetInt("http_server.port"),
+		APIVersion:         viper.GetString("http_server.api_version"),
+		Port:               viper.GetInt("http_server.port"),
+		ReadTimeoutSec:     viper.GetInt("http_server.read_timeout_sec"),
+		WriteTimeoutSec:    viper.GetInt("http_server.write_timeout_sec"),
+		ShutdownTimeoutSec: viper.GetInt("http_server.shutdown_timeout_sec"),
 	}, nil
 }
