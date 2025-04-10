@@ -10,7 +10,7 @@ tcp_server:
   ping_timeout_sec: 15
   ping_interval_sec: 5
 
-udp_server:
+stun_server:
   port: 11000
 
 database:
