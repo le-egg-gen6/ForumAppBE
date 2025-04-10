@@ -2,7 +2,6 @@ package utils
 
 import (
 	"forum/constant"
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"strconv"
 	"time"
@@ -32,11 +31,4 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 		}
 		return []byte(constant.SecretToken), nil
 	})
-}
-
-func GetCurrentContextUserID(c *gin.Context) int64 {
-	if id, ok := c.Value(constant.UserIDContextKey).(int64); ok {
-		return id
-	}
-	return -1
 }

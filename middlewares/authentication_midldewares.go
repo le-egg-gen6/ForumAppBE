@@ -34,14 +34,15 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 		}
 
 		c.Set(constant.UserIDContextKey, claims.Subject)
+		c.Set(constant.AuthorizationTokenContextKey, tokenStr)
 		c.Next()
 	}
 }
 
 func ExtractTokenFromRequest(c *gin.Context) string {
-	bearerToken := c.Request.Header.Get("Authorization")
+	bearerToken := utils.GetRequestHeader(c, constant.AuthorizationHeader)
 	parts := strings.Split(bearerToken, " ")
-	if len(parts) == 2 && parts[0] == "Bearer" {
+	if len(parts) == 2 && parts[0] == constant.AuthorizationHeaderPrefix {
 		return parts[1]
 	}
 	return ""

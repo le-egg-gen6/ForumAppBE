@@ -2,8 +2,10 @@ package redis
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"time"
 )
 
 type RedisClient struct {
@@ -40,4 +42,23 @@ func InitializeRedis() {
 
 func GetRedisInstance() *RedisClient {
 	return Instance
+}
+
+func SetWithTTL(key string, value interface{}, ttl time.Duration) error {
+	return Instance.Client.Set(Instance.ctx, key, value, ttl).Err()
+}
+
+func SetWithoutTTL(key string, value interface{}) error {
+	return Instance.Client.Set(Instance.ctx, key, value, 0).Err()
+}
+
+func Get[T any](key string) (T, error) {
+	val, err := Instance.Client.Get(Instance.ctx, key).Result()
+	if err != nil {
+		var zero T
+		return zero, err
+	}
+	var result T
+	err = json.Unmarshal([]byte(val), &result)
+	return result, err
 }

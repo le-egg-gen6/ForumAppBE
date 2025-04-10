@@ -2,13 +2,16 @@ package handler
 
 import (
 	"forum/3rd_party_service/mail_sender"
+	"forum/3rd_party_service/redis"
 	"forum/dtos"
+	"forum/middlewares"
 	"forum/models"
 	"forum/repository"
 	"forum/shared"
 	"forum/utils"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func InitializeAuthHandler(router *gin.RouterGroup) {
@@ -16,6 +19,7 @@ func InitializeAuthHandler(router *gin.RouterGroup) {
 	{
 		authGroup.POST("/login", Login)
 		authGroup.POST("/register", Register)
+		authGroup.GET("/validate", middlewares.AuthenticationMiddlewares(), Validate)
 	}
 }
 
@@ -114,4 +118,55 @@ func Register(c *gin.Context) {
 	}
 
 	shared.SendSuccess(c, dtos.AuthDTO{Token: token, Validated: user.Validated})
+}
+
+func Validate(c *gin.Context) {
+	validateCodeStr := utils.GetRequestParam(c, "code")
+	if validateCodeStr == "" {
+		shared.SendError(c, http.StatusBadRequest, "Invalid validate code")
+		return
+	}
+	validateCode, err := strconv.ParseUint(validateCodeStr, 10, 64)
+	if err != nil {
+		shared.SendError(c, http.StatusBadRequest, "Invalid validate code")
+		return
+	}
+
+	userId := utils.GetCurrentContextUserID(c)
+	if userId < 0 {
+		shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userId))
+	if err != nil {
+		shared.SendInternalServerError(c)
+	}
+	if user == nil {
+		shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	if user.ValidateCode != validateCode {
+		shared.SendError(c, http.StatusUnauthorized, "Invalid validate code")
+		return
+	}
+
+	user.Validated = true
+	err = repository.GetUserRepositoryInstance().Update(user)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+
+	currentToken := utils.GetCurrentContextAuthorizationToken(c)
+	_ = redis.SetWithoutTTL(currentToken, true)
+
+	newToken, err := utils.GenerateToken(user.ID, false)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+
+	shared.SendSuccess(c, dtos.AuthDTO{Token: newToken, Validated: user.Validated})
 }
