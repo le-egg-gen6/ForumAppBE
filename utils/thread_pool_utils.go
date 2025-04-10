@@ -1,4 +1,4 @@
-package thread_pool_utils
+package utils
 
 import (
 	"fmt"
@@ -61,7 +61,7 @@ func (tp *ThreadPool) Start() {
 	}
 }
 
-func Execute(function interface{}, args ...interface{}) {
+func ExecuteAsync(function interface{}, args ...interface{}) {
 	GetDefaultPool().Execute(function, args...)
 }
 
@@ -151,15 +151,8 @@ func (tp *ThreadPool) Shutdown() {
 	tp.isStarted = false
 }
 
-func ShutdownDefaultPool() {
+func ShutdownPool() {
 	if defaultPool != nil {
 		defaultPool.Shutdown()
 	}
-}
-
-func SetDefaultPoolSize(size int) {
-	defaultPoolOnce.Do(func() {
-		defaultPool = New(size)
-		defaultPool.Start()
-	})
 }

@@ -26,3 +26,11 @@ func SendError(c *gin.Context, code int, msg string) {
 		Data:    nil,
 	})
 }
+
+func SendInternalServerError(c *gin.Context) {
+	c.JSON(http.StatusInternalServerError, APIResponse{
+		Status:  "error",
+		Message: "An error occurred, please try again later",
+		Data:    nil,
+	})
+}

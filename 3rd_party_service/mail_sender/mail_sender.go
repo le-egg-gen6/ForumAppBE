@@ -5,6 +5,7 @@ import (
 	"net/mail"
 	"net/smtp"
 	"regexp"
+	"strconv"
 )
 
 type IMailSender interface {
@@ -54,6 +55,15 @@ func (ms *MailSender) SendMail(to string, subject string, body string) error {
 	addr := fmt.Sprintf("%s:%d", ms.Config.SMTPHost, ms.Config.SMTPPort)
 
 	err := smtp.SendMail(addr, auth, ms.Config.SMTPUsername, []string{to}, message)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func SendValidateMail(to string, username string, code uint64) error {
+	body := fmt.Sprintf(Instance.Config.ValidateMailPattern, username, strconv.FormatUint(code, 10))
+	err := Instance.SendMail(to, "Validate your account", body)
 	if err != nil {
 		return err
 	}

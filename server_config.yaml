@@ -16,8 +16,8 @@ database:
   port: 6789
 
 redis:
-  password: forum
-  host: localhost
+  password: "forum"
+  host: "localhost"
   port: 9999
   database: 0
 
@@ -32,6 +32,7 @@ mail:
   smtp_port: 587
   smtp_username: "nguyenle.workspace@gmail.com"
   smtp_password: "cwpa uyfq dlzn iymi"
+  validate_mail_pattern_dir: "/asset/validate_pattern.html"
 
 log:
   log_level: "info"
