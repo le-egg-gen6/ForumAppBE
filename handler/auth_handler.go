@@ -20,6 +20,7 @@ func InitializeAuthHandler(router *gin.RouterGroup) {
 		authGroup.POST("/login", Login)
 		authGroup.POST("/register", Register)
 		authGroup.GET("/validate", middlewares.AuthenticationMiddlewares(), Validate)
+		authGroup.GET("/resend-mail", middlewares.AuthenticationMiddlewares(), ResendMail)
 	}
 }
 
@@ -169,4 +170,31 @@ func Validate(c *gin.Context) {
 	}
 
 	shared.SendSuccess(c, dtos.AuthDTO{Token: newToken, Validated: user.Validated})
+}
+
+func ResendMail(c *gin.Context) {
+	userId := utils.GetCurrentContextUserID(c)
+	if userId < 0 {
+		shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userId))
+	if err != nil {
+		shared.SendInternalServerError(c)
+	}
+	if user == nil {
+		shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	validateCode := utils.GenerateValidateCode(6)
+	utils.ExecuteAsync(mail_sender.SendValidateMail, user.Email, user.Username, validateCode)
+	user.ValidateCode = validateCode
+	err = repository.GetUserRepositoryInstance().Update(user)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+	shared.SendSuccess(c, nil)
 }
