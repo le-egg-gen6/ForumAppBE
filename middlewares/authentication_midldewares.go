@@ -3,7 +3,7 @@ package middlewares
 import (
 	"forum/constant"
 	"forum/shared"
-	"forum/utils/jwt"
+	"forum/utils/jwt_utils"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
@@ -19,7 +19,7 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 			return
 		}
 
-		jwtToken, err := jwt.ValidateToken(tokenStr)
+		jwtToken, err := jwt_utils.ValidateToken(tokenStr)
 		if err != nil {
 			shared.SendError(c, http.StatusUnauthorized, "Unauthorized")
 			c.Abort()

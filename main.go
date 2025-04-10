@@ -10,6 +10,7 @@ import (
 	"forum/logger"
 	"forum/repository"
 	"forum/server/http"
+	"forum/utils/thread_pool_utils"
 )
 
 func main() {
@@ -47,6 +48,7 @@ func Initialize() {
 }
 
 func CleanupUnfinishedTasks() {
+	thread_pool_utils.ShutdownDefaultPool()
 	logger.GetLogInstance().Info("================================================================")
 	logger.GetLogInstance().Info("=======================Application Stop=========================")
 	logger.GetLogInstance().Info("================================================================")
