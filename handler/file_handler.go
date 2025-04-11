@@ -53,10 +53,10 @@ func SaveFile(c *gin.Context) {
 		File:       &file,
 	}
 
-	fileUrl, err := cloudinary.GetFileUploaderInstance().UploadFile(&fileDtos)
+	image, err := cloudinary.GetFileUploaderInstance().UploadFile(&fileDtos)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
 	}
-	shared.SendSuccess(c, dtos.Url{Url: fileUrl})
+	shared.SendSuccess(c, dtos.Url{Url: image.URL})
 }

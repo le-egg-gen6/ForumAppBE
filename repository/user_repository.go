@@ -12,7 +12,7 @@ type IUserRepository interface {
 	FindByEmail(email string) (*models.User, error)
 	Update(user *models.User) error
 	Delete(id uint64) error
-	ListAll() ([]models.User, error)
+	FindAll() ([]models.User, error)
 }
 
 type UserRepository struct {
@@ -24,7 +24,7 @@ var UserRepositoryInstance *UserRepository
 func InitializeUserRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.User{})
 	if err != nil {
-		//
+		panic("Error migrating user table: " + err.Error())
 	}
 	UserRepositoryInstance = &UserRepository{
 		db: db,
@@ -74,7 +74,7 @@ func (r *UserRepository) Delete(id uint64) error {
 	return r.db.Model(&models.User{}).Where("id = ?", id).Update("deleted", true).Error
 }
 
-func (r *UserRepository) ListAll() ([]models.User, error) {
+func (r *UserRepository) FindAll() ([]models.User, error) {
 	var users []models.User
 	if err := r.db.Where("deleted = ?", false).Find(&users).Error; err != nil {
 		return nil, err

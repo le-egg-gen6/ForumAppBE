@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"forum/dtos"
 	"forum/logger"
+	"forum/models"
+	"forum/repository"
 	"github.com/cloudinary/cloudinary-go"
 	"github.com/cloudinary/cloudinary-go/api/uploader"
 	"github.com/go-playground/validator/v10"
@@ -67,7 +69,7 @@ const (
 	maxRetry = 5
 )
 
-func (u *FileUploader) UploadFile(file *dtos.File) (string, error) {
+func (u *FileUploader) UploadFile(file *dtos.File) (*models.Image, error) {
 	var fileUrl string
 	for attempt := 0; attempt <= maxRetry; attempt++ {
 		if attempt > 0 {
@@ -84,5 +86,12 @@ func (u *FileUploader) UploadFile(file *dtos.File) (string, error) {
 			break
 		}
 	}
-	return fileUrl, nil
+	if fileUrl != "" {
+		image := models.Image{
+			URL:  fileUrl,
+			Type: models.Nothing,
+		}
+		return repository.GetImageRepositoryInstance().Create(&image)
+	}
+	return nil, fmt.Errorf("failed to upload file: %s", file.FileHeader.Filename)
 }
