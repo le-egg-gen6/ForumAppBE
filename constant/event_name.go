@@ -6,6 +6,12 @@ const SCLogin = "sc_login"
 const CSAddFriend = "cs_add_friend"
 const SCAddFriend = "sc_add_friend"
 
+const CSJoinRoom = "cs_join_room"
+const SCJoinRoom = "sc_join_room"
+
+const CSLeaveRoom = "cs_leave_room"
+const SCLeaveRoom = "sc_leave_room"
+
 const CSSendMessage = "cs_send_message"
 const SCSendMessage = "sc_send_message"
 

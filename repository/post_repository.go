@@ -1,14 +1,15 @@
 package repository
 
 import (
+	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
 
 type IPostRepository interface {
 	Create(post *models.Post) (*models.Post, error)
-	FindByPostID(id uint64) (*models.Post, error)
-	FindAll() ([]models.Post, error)
+	FindByID(id uint64) (*models.Post, error)
+	FindAll() ([]*models.Post, error)
 	Update(post *models.Post) error
 	Delete(id uint64) error
 }
@@ -40,16 +41,19 @@ func (r *PostRepository) Create(post *models.Post) (*models.Post, error) {
 	return post, nil
 }
 
-func (r *PostRepository) FindByPostID(id uint64) (*models.Post, error) {
+func (r *PostRepository) FindByID(id uint64) (*models.Post, error) {
 	var post models.Post
 	if err := r.db.First(&post, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &post, nil
 }
 
-func (r *PostRepository) FindAll() ([]models.Post, error) {
-	var posts []models.Post
+func (r *PostRepository) FindAll() ([]*models.Post, error) {
+	var posts []*models.Post
 	if err := r.db.Where("deleted = ?", false).Find(&posts).Error; err != nil {
 		return nil, err
 	}

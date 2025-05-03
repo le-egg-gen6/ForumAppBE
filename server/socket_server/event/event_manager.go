@@ -8,4 +8,6 @@ func RegisterEvent(router *socket_server.EventRouter) {
 	RegisterEventGetFriendRequest(router)
 	RegisterEventGetNotification(router)
 	RegisterEventSendMessage(router)
+	RegisterEventJoinRoom(router)
+	RegisterEventLeaveRoom(router)
 }

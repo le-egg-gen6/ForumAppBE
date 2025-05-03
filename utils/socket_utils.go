@@ -11,3 +11,8 @@ func Broadcast(clients []*socket_server.SocketClient, data interface{}) {
 		_ = client.Send(data)
 	}
 }
+
+func IsUserOnline(userID uint64) bool {
+	_, found := socket_server.GetSocketServer().Hub.ClientByUserID[userID]
+	return found
+}

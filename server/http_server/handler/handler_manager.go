@@ -7,4 +7,5 @@ func InitializeHandler(routerGroup *gin.RouterGroup) {
 	InitializePostHandler(routerGroup)
 	InitializeCommentHandler(routerGroup)
 	InitializeReactionHandler(routerGroup)
+	InitializeUserHandler(routerGroup)
 }

@@ -42,7 +42,7 @@ func ReactionToPost(c *gin.Context) {
 		shared.SendBadRequest(c, "Post not exist")
 		return
 	}
-	post, err := repository.GetPostRepositoryInstance().FindByPostID(postID)
+	post, err := repository.GetPostRepositoryInstance().FindByID(postID)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

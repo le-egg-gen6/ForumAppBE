@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
@@ -40,6 +41,9 @@ func (r *ImageRepository) Create(image *models.Image) (*models.Image, error) {
 func (r *ImageRepository) FindByID(id uint64) (*models.Image, error) {
 	var image models.Image
 	if err := r.db.First(&image, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &image, nil

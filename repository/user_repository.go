@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,8 @@ type IUserRepository interface {
 	FindByEmail(email string) (*models.User, error)
 	Update(user *models.User) error
 	Delete(id uint64) error
-	FindAll() ([]models.User, error)
+	FindAll() ([]*models.User, error)
+	FindByPartialUsername(partialUsername string) ([]*models.User, error)
 }
 
 type UserRepository struct {
@@ -44,7 +46,10 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 
 func (r *UserRepository) FindByID(id uint64) (*models.User, error) {
 	var user models.User
-	if err := r.db.First(&user, id).Error; err != nil {
+	if err := r.db.Where("delete = ?", false).First(&user, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -52,7 +57,10 @@ func (r *UserRepository) FindByID(id uint64) (*models.User, error) {
 
 func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 	var user models.User
-	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+	if err := r.db.Where("username = ? AND delete = ?", username, false).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -60,7 +68,10 @@ func (r *UserRepository) FindByUsername(username string) (*models.User, error) {
 
 func (r *UserRepository) FindByEmail(email string) (*models.User, error) {
 	var user models.User
-	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
+	if err := r.db.Where("email = ? AND delete = ?", email, false).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -74,9 +85,17 @@ func (r *UserRepository) Delete(id uint64) error {
 	return r.db.Model(&models.User{}).Where("id = ?", id).Update("deleted", true).Error
 }
 
-func (r *UserRepository) FindAll() ([]models.User, error) {
-	var users []models.User
+func (r *UserRepository) FindAll() ([]*models.User, error) {
+	var users []*models.User
 	if err := r.db.Where("deleted = ?", false).Find(&users).Error; err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
+func (r *UserRepository) FindByPartialUsername(partialUsername string) ([]*models.User, error) {
+	var users []*models.User
+	if err := r.db.Where("username LIKE ? AND delete = ?", "%"+partialUsername+"%", false).Find(&users).Error; err != nil {
 		return nil, err
 	}
 	return users, nil

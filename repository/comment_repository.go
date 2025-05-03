@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
@@ -8,7 +9,7 @@ import (
 type ICommentRepository interface {
 	Create(comment *models.Comment) (*models.Comment, error)
 	FindByID(id uint64) (*models.Comment, error)
-	FindByPostID(id uint64) ([]models.Comment, error)
+	FindByPostID(id uint64) ([]*models.Comment, error)
 	Update(comment *models.Comment) error
 	Delete(id uint64) error
 }
@@ -43,13 +44,16 @@ func (r *CommentRepository) Create(comment *models.Comment) (*models.Comment, er
 func (r *CommentRepository) FindByID(id uint64) (*models.Comment, error) {
 	var comment models.Comment
 	if err := r.db.First(&comment, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 	return &comment, nil
 }
 
-func (r *CommentRepository) FindByPostID(id uint64) ([]models.Comment, error) {
-	var comments []models.Comment
+func (r *CommentRepository) FindByPostID(id uint64) ([]*models.Comment, error) {
+	var comments []*models.Comment
 	if err := r.db.Where("post_id = ? AND delete = ?", id, false).Find(&comments).Error; err != nil {
 		return nil, err
 	}
