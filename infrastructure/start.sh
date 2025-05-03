@@ -2,7 +2,7 @@
 set -e
 
 echo "Starting Redis service..."
-cd ./redis
+cd ./rediz
 docker-compose up -d
 echo "Redis service started successfully."
 cd ..

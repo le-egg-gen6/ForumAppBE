@@ -28,9 +28,13 @@ func SendError(c *gin.Context, code int, msg string) {
 }
 
 func SendInternalServerError(c *gin.Context) {
-	c.JSON(http.StatusInternalServerError, APIResponse{
-		Status:  "error",
-		Message: "An error occurred, please try again later",
-		Data:    nil,
-	})
+	SendError(c, http.StatusInternalServerError, "An error occurred, please try again later")
+}
+
+func SendUnauthorized(c *gin.Context) {
+	SendError(c, http.StatusUnauthorized, "Unauthorized")
+}
+
+func SendBadRequest(c *gin.Context, msg string) {
+	SendError(c, http.StatusBadRequest, msg)
 }

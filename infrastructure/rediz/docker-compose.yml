@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7
+    container_name: redis_service-forum
+    command: redis_service-server --requirepass forum
+    ports:
+      - "9999:6379"
+    volumes:
+      - redis_service-data:/data
+    healthcheck:
+      test: ["CMD", "redis_service-cli", "-h", "localhost", "-p", "6379", "-a", "forum", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: always
+    environment:
+      - REDIS_PASSWORD=forum
+
+volumes:
+  redis-data:

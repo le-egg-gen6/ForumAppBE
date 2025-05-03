@@ -3,15 +3,16 @@ package main
 import (
 	"errors"
 	"fmt"
-	"forum/3rd_party_service/cloudinary"
+	"forum/3rd_party_service/cloudinary_service"
 	"forum/3rd_party_service/mail_sender"
-	"forum/3rd_party_service/redis"
+	"forum/3rd_party_service/redis_service"
 	"forum/database"
-	"forum/handler"
 	"forum/logger"
 	"forum/repository"
 	"forum/server/http_server"
+	"forum/server/http_server/handler"
 	"forum/server/socket_server"
+	"forum/server/socket_server/event"
 	"forum/utils"
 	"net/http"
 	"os"
@@ -37,13 +38,13 @@ func main() {
 		}
 	}()
 
-	// Start Socket.IO server
+	// Start Socket server
 	go func() {
-		ioServer := socket_server.GetSocketServer()
-		logger.GetLogInstance().Info(fmt.Sprintf("Socket.IO Server running on port: %d", ioServer.Config.Port))
-		err := ioServer.Run()
+		socketServer := socket_server.GetSocketServer()
+		logger.GetLogInstance().Info(fmt.Sprintf("Socket server running on port: %d", socketServer.Config.Port))
+		err := socketServer.Run()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.GetLogInstance().Error(fmt.Sprintf("Error starting Socket.IO server: %s", err))
+			logger.GetLogInstance().Error(fmt.Sprintf("Error starting Socket server: %s", err))
 		}
 	}()
 
@@ -59,14 +60,15 @@ func main() {
 
 func Initialize() {
 	logger.InitializeLogger()
-	cloudinary.InitializeFileUploader()
+	cloudinary_service.InitializeFileUploader()
 	mail_sender.InitializeMailSender()
-	redis.InitializeRedis()
+	redis_service.InitializeRedis()
 	database.InitializeDatabaseConnection()
 	repository.InitializeRepository(database.GetDatabaseConnection())
 	http_server.InitializeHTTPServer()
 	handler.InitializeHandler(http_server.GetHTTPServer().RouterGroup)
-	socket_server.InitializeSocketIOServer()
+	socket_server.InitializeSocketServer()
+	event.RegisterEvent(socket_server.GetSocketServer().Router)
 }
 
 func CleanupUnfinishedTasks() {
@@ -77,9 +79,9 @@ func CleanupUnfinishedTasks() {
 			logger.GetLogInstance().Error(fmt.Sprintf("Error closing HTTP server: %s", err))
 		}
 	}
-	if ioServer := socket_server.GetSocketServer(); ioServer != nil {
-		if err := ioServer.Close(); err != nil {
-			logger.GetLogInstance().Error(fmt.Sprintf("Error closing Socket.IO server: %s", err))
+	if socketServer := socket_server.GetSocketServer(); socketServer != nil {
+		if err := socketServer.Close(); err != nil {
+			logger.GetLogInstance().Error(fmt.Sprintf("Error closing Socket server: %s", err))
 		}
 	}
 

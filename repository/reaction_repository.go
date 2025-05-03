@@ -1,15 +1,13 @@
 package repository
 
 import (
-	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
 
 type IReactionRepository interface {
-	FindByType(contentID uint64, contentType int) ([]models.ContentReaction, error)
-	IncreaseReaction(contentId uint64, contentType int, reactionType string) (*models.ContentReaction, error)
-	DecreaseReaction(contentId uint64, contentType int, reactionType string) (*models.ContentReaction, error)
+	Create(reaction *models.ContentReaction) (*models.ContentReaction, error)
+	Update(reaction *models.ContentReaction) error
 }
 
 type ReactionRepository struct {
@@ -21,7 +19,7 @@ var ReactionRepositoryInstance *ReactionRepository
 func InitializeReactionRepository(db *gorm.DB) {
 	err := db.AutoMigrate(&models.ContentReaction{})
 	if err != nil {
-		//
+		panic("Error migrating reaction table: " + err.Error())
 	}
 	ReactionRepositoryInstance = &ReactionRepository{
 		db: db,
@@ -32,52 +30,12 @@ func GetReactionRepositoryInstance() *ReactionRepository {
 	return ReactionRepositoryInstance
 }
 
-func (r *ReactionRepository) FindByType(contentId uint64, contentType int) ([]models.ContentReaction, error) {
-	var reactions []models.ContentReaction
-	if err := r.db.Where("content_id = ? AND content_type = ?", contentId, contentType).Find(&reactions).Error; err != nil {
+func (r *ReactionRepository) Create(reaction *models.ContentReaction) (*models.ContentReaction, error) {
+	if err := r.db.Create(reaction).Error; err != nil {
 		return nil, err
 	}
-	return reactions, nil
+	return reaction, nil
 }
-
-func (r *ReactionRepository) IncreaseReaction(contentId uint64, contentType int, reactionType string) (*models.ContentReaction, error) {
-	var reaction models.ContentReaction
-	err := r.db.Where("content_id = ? AND content_type = ? AND reaction_type = ?").Find(&reaction).Error
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			reaction = models.ContentReaction{
-				ContentID:    contentId,
-				ContentType:  models.ContentType(contentType),
-				ReactionType: models.ReactionType(reactionType),
-				Count:        1,
-			}
-			if err := r.db.Create(&reaction).Error; err != nil {
-				return nil, err
-			}
-			return &reaction, nil
-		}
-		return nil, err
-	}
-	reaction.Count++
-	if err := r.db.Save(&reaction).Error; err != nil {
-		return nil, err
-	}
-
-	return &reaction, nil
-}
-
-func (r *ReactionRepository) DecreaseReaction(contentId uint64, contentType int, reactionType string) (*models.ContentReaction, error) {
-	var reaction models.ContentReaction
-	err := r.db.Where("content_id = ? AND content_type = ? AND reaction_type = ?", contentId, contentType, reactionType).
-		First(&reaction).Error
-
-	if err != nil {
-		return nil, err
-	}
-
-	reaction.Count--
-	if err := r.db.Save(&reaction).Error; err != nil {
-		return nil, err
-	}
-	return &reaction, nil
+func (r *ReactionRepository) Update(reaction *models.ContentReaction) error {
+	return r.db.Save(reaction).Error
 }

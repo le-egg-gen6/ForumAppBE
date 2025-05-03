@@ -1,87 +1,167 @@
 package socket_server
 
 import (
+	"encoding/json"
 	"fmt"
-	socketio "github.com/googollee/go-socket.io"
-	"github.com/googollee/go-socket.io/engineio"
+	"forum/logger"
+	"forum/shared"
+	"github.com/google/uuid"
+	"github.com/gorilla/websocket"
 	"net/http"
-	"sync"
-	"time"
+	"strconv"
 )
 
-type SocketIOServer struct {
-	Config     *SocketServerConfig
-	Server     *socketio.Server
-	httpServer *http.Server
-	clients    map[string]socketio.Conn
-	clientsMux sync.RWMutex
+type SocketServer struct {
+	Config *SocketServerConfig
+	Hub    *Hub
+	Router *EventRouter
 }
 
-var Server *SocketIOServer
+var upgrader = websocket.Upgrader{
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+}
 
-func InitializeSocketIOServer() {
+var Server *SocketServer
+
+func InitializeSocketServer() {
 	cfg, err := LoadSocketServerConfig()
 	if err != nil {
 		panic("TCP Server configuration not found")
 	}
-	server := socketio.NewServer(&engineio.Options{
-		PingTimeout:  time.Duration(cfg.PingTimeoutSec) * time.Second,
-		PingInterval: time.Duration(cfg.PingIntervalSec) * time.Second,
-	})
-	mux := http.NewServeMux()
-	mux.Handle("/socket.io/", server)
-	httpServer := &http.Server{
-		Addr:    fmt.Sprintf(":%d", cfg.Port),
-		Handler: mux,
+	hub := InitializeNewHub()
+	eventRouter := InitializeEventRouter(hub)
+	SocketIOServer := &SocketServer{
+		Config: cfg,
+		Hub:    hub,
+		Router: eventRouter,
 	}
-
-	Server = &SocketIOServer{
-		Config:     cfg,
-		Server:     server,
-		httpServer: httpServer,
-	}
+	Server = SocketIOServer
 }
 
-func GetSocketServer() *SocketIOServer {
+func GetSocketServer() *SocketServer {
 	return Server
 }
 
-func (s *SocketIOServer) Run() error {
-	return s.httpServer.ListenAndServe()
-}
-
-func (s *SocketIOServer) RegisterEvent(event string, handler func(socketio.Conn, interface{})) {
-	s.Server.OnEvent("/", event, handler)
-}
-
-func (s *SocketIOServer) SendToClient(clientID, event string, data interface{}) bool {
-	s.clientsMux.RLock()
-	defer s.clientsMux.RUnlock()
-
-	if client, exists := s.clients[clientID]; exists {
-		client.Emit(event, data)
-		return true
+func HandleConnection(hub *Hub, router *EventRouter, w http.ResponseWriter, r *http.Request) {
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		logger.GetLogInstance().Warn(fmt.Sprintf("Upgrade failed: %v", err))
+		return
+	}
+	userIDStr := r.URL.Query().Get("id")
+	var userID int64
+	if userIDStr != "" {
+		userID, err = strconv.ParseInt(userIDStr, 10, 64)
+		if err != nil || userID < 0 {
+			logger.GetLogInstance().Error(fmt.Sprintf("Parse user id failed: %v", err))
+			return
+		}
+	}
+	client := &SocketClient{
+		ID:     uuid.NewString(),
+		UserID: uint64(userID),
+		Conn:   conn,
+		Hub:    hub,
 	}
 
-	return false
+	hub.Register <- client
+
+	go ReadPump(client, router)
 }
 
-func (s *SocketIOServer) GetAllClients() []string {
-	s.clientsMux.RLock()
-	defer s.clientsMux.RUnlock()
+func ReadPump(client *SocketClient, router *EventRouter) {
+	conn := client.Conn
+	defer func() {
+		client.Hub.Unregister <- client
+	}()
 
-	clients := make([]string, 0, len(s.clients))
-	for clientID := range s.clients {
-		clients = append(clients, clientID)
+	for {
+		messageType, messageBytes, err := conn.ReadMessage()
+		if err == nil {
+			if messageType != websocket.TextMessage {
+				logger.GetLogInstance().Info(fmt.Sprintf(
+					"Client ID: %s, UserID: %d, Addr: %s send non-text message",
+					client.ID,
+					client.UserID,
+					client.Conn.RemoteAddr(),
+				))
+				continue
+			}
+			var msg shared.Message
+			err = json.Unmarshal(messageBytes, &msg)
+			if err != nil {
+				logger.GetLogInstance().Error(fmt.Sprintf(
+					"Client ID: %s, UserID: %d, Addr: %s send invalid message format. Raw: %s",
+					client.ID,
+					client.UserID,
+					client.Conn.RemoteAddr(),
+					string(messageBytes),
+				))
+				continue
+			}
+			handler, found := router.GetEventHandler(msg.Name)
+			if !found {
+				logger.GetLogInstance().Error(fmt.Sprintf(
+					"No handler found for event: %s. Client ID: %s, UserID: %d, Addr: %s.",
+					msg.Name,
+					client.ID,
+					client.UserID,
+					client.Conn.RemoteAddr(),
+				))
+				continue
+			}
+			err = handler(client, msg)
+			if err != nil {
+				logger.GetLogInstance().Error(fmt.Sprintf(
+					"Error executing handler for event '%s'. Client ID: %s, UserID: %d, Addr: %s send message failed. Raw: %s",
+					msg.Name,
+					client.ID,
+					client.UserID,
+					client.Conn.RemoteAddr(),
+					string(messageBytes),
+				))
+			}
+		} else {
+			if websocket.IsUnexpectedCloseError(err,
+				websocket.CloseGoingAway, websocket.CloseAbnormalClosure, websocket.CloseNoStatusReceived) {
+				logger.GetLogInstance().Info(fmt.Sprintf(
+					"Client ID: %s, UserID: %d, Addr: %s disconnected unexpectedly: %v",
+					client.ID,
+					client.UserID,
+					conn.RemoteAddr(),
+					err,
+				))
+			} else {
+				logger.GetLogInstance().Error(fmt.Sprintf(
+					"Client ID: %s, UserID: %d, Addr: %s reading error: %v ",
+					client.ID,
+					client.UserID,
+					conn.RemoteAddr(),
+					err,
+				))
+			}
+			break
+		}
 	}
-
-	return clients
 }
 
-func (s *SocketIOServer) Close() error {
-	if err := s.Server.Close(); err != nil {
-		return err
-	}
+func (ss *SocketServer) RegisterEventHandler(name string, handler EventHandlerFunc) {
+	ss.Router.RegisterEventHandler(name, handler)
+}
 
-	return s.httpServer.Close()
+func (ss *SocketServer) Run() error {
+	go ss.Hub.Run()
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		HandleConnection(ss.Hub, ss.Router, w, r)
+	})
+	addr := fmt.Sprintf(":%d", ss.Config.Port)
+	return http.ListenAndServe(addr, nil)
+}
+
+func (ss *SocketServer) Close() error {
+	return nil
 }

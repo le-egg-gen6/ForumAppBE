@@ -8,7 +8,7 @@ type UserDTO struct {
 }
 
 type SimpleUserDTO struct {
-	ID        uint64 `json:"id"`
-	Username  string `json:"username"`
-	AvatarUrl string `json:"avatarUrl"`
+	ID       uint64 `json:"id"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
 }

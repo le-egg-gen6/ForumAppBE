@@ -3,7 +3,7 @@ package http_server
 import (
 	"context"
 	"fmt"
-	middlewares2 "forum/middlewares"
+	"forum/server/http_server/middlewares"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -30,10 +30,10 @@ func InitializeHTTPServer() {
 
 	routerGroup := router.Group(
 		apiPrefix,
-		middlewares2.RecoverMiddleware(),
-		middlewares2.RequestIDMiddleware(),
-		middlewares2.LoggerMiddleware(),
-		middlewares2.CORSMiddleware(),
+		middlewares.RecoverMiddleware(),
+		middlewares.RequestIDMiddleware(),
+		middlewares.LoggerMiddleware(),
+		middlewares.CORSMiddleware(),
 	)
 
 	httpServer := &http.Server{

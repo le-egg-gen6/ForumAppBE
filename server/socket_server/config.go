@@ -3,9 +3,7 @@ package socket_server
 import "github.com/spf13/viper"
 
 type SocketServerConfig struct {
-	Port            int
-	PingTimeoutSec  int
-	PingIntervalSec int
+	Port int
 }
 
 func LoadSocketServerConfig() (*SocketServerConfig, error) {
@@ -18,8 +16,6 @@ func LoadSocketServerConfig() (*SocketServerConfig, error) {
 	}
 
 	return &SocketServerConfig{
-		Port:            viper.GetInt("tcp_server.port"),
-		PingTimeoutSec:  viper.GetInt("tcp_server.ping_timeout_sec"),
-		PingIntervalSec: viper.GetInt("tcp_server.ping_interval_sec"),
+		Port: viper.GetInt("tcp_server.port"),
 	}, nil
 }

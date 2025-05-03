@@ -8,7 +8,7 @@ echo "PostgreSQL database service stopped."
 cd ..
 
 echo "Stopping Redis service..."
-cd ./redis
+cd ./rediz
 docker-compose down
 echo "Redis service stopped."
 cd ..

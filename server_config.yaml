@@ -7,11 +7,6 @@ http_server:
 
 tcp_server:
   port: 10010
-  ping_timeout_sec: 15
-  ping_interval_sec: 5
-
-stun_server:
-  port: 11000
 
 database:
   username: "forum"
