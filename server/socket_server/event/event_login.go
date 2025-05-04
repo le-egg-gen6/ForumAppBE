@@ -13,7 +13,7 @@ func RegisterEventLogin(router *socket_server.EventRouter) {
 }
 
 func EventLogin(client *socket_server.SocketClient, data interface{}) error {
-	utils.Send(client, shared.Message{
+	utils.Send(client, shared.SocketMessage{
 		Name: constant.SCLogin,
 		Data: fmt.Sprintf("Server resp: %v", data),
 	})

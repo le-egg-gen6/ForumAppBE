@@ -1,6 +1,6 @@
 package shared
 
-type Message struct {
+type SocketMessage struct {
 	Name string      `json:"name"`
 	Data interface{} `json:"data"`
 }

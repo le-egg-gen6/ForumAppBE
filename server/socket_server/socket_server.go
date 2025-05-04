@@ -91,7 +91,7 @@ func ReadPump(client *SocketClient, router *EventRouter) {
 				))
 				continue
 			}
-			var msg shared.Message
+			var msg shared.SocketMessage
 			err = json.Unmarshal(messageBytes, &msg)
 			if err != nil {
 				logger.GetLogInstance().Error(fmt.Sprintf(
