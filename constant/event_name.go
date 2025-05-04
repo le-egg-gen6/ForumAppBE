@@ -15,6 +15,9 @@ const SCLeaveRoom = "sc_leave_room"
 const CSSendMessage = "cs_send_message"
 const SCSendMessage = "sc_send_message"
 
+const CSGetChatRoom = "cs_get_chat_room"
+const SCGetChatRoom = "sc_get_chat_room"
+
 const CSGetFriendRequest = "cs_get_friend_request"
 const SCGetFriendRequest = "sc_get_friend_request"
 

@@ -78,3 +78,32 @@ func (h *Hub) GetClientByUserID(userID uint64) *SocketClient {
 	}
 	return socketClient
 }
+
+func (h *Hub) Close() {
+	h.rwMutex.Lock()
+	defer h.rwMutex.Unlock()
+	for conn, client := range h.Clients {
+		if client != nil && client.Conn != nil {
+			err := client.Conn.Close()
+			if err != nil {
+				logger.GetLogInstance().Error(fmt.Sprintf(
+					"Failed to close connection for client ID: %s, UserID: %d, Addr: %s, Error: %v",
+					client.ID,
+					client.UserID,
+					client.Conn.RemoteAddr(),
+					err,
+				))
+			}
+			delete(h.ClientByUserID, client.UserID)
+		}
+		delete(h.Clients, conn)
+	}
+	if len(h.Clients) > 0 {
+		logger.GetLogInstance().Warn(fmt.Sprintf("Still have connection remaining in map clients by connection: %d", len(h.Clients)))
+	}
+	if len(h.ClientByUserID) > 0 {
+		logger.GetLogInstance().Warn(fmt.Sprintf("Still have connection remaining in map clients by user id: %d", len(h.ClientByUserID)))
+	}
+	close(h.Register)
+	close(h.Unregister)
+}

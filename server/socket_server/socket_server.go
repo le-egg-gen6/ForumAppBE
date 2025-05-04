@@ -114,7 +114,7 @@ func ReadPump(client *SocketClient, router *EventRouter) {
 				))
 				continue
 			}
-			err = handler(client, msg)
+			err = handler(client, &msg)
 			if err != nil {
 				logger.GetLogInstance().Error(fmt.Sprintf(
 					"Error executing handler for event '%s'. Client ID: %s, UserID: %d, Addr: %s send message failed. Raw: %s",
@@ -163,5 +163,9 @@ func (ss *SocketServer) Run() error {
 }
 
 func (ss *SocketServer) Close() error {
+	if ss == nil || ss.Hub == nil {
+		return fmt.Errorf("socket server or hub is not initialized")
+	}
+	ss.Hub.Close()
 	return nil
 }

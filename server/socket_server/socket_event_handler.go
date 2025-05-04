@@ -2,10 +2,11 @@ package socket_server
 
 import (
 	"forum/logger"
+	"forum/shared"
 	"sync"
 )
 
-type EventHandlerFunc func(client *SocketClient, data interface{}) error
+type EventHandlerFunc func(client *SocketClient, data *shared.SocketMessage) error
 
 type EventRouter struct {
 	EventHandlers map[string]EventHandlerFunc
