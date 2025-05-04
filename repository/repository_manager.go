@@ -8,4 +8,6 @@ func InitializeRepository(db *gorm.DB) {
 	InitializeCommentRepository(db)
 	InitializeReactionRepository(db)
 	InitializeImageRepository(db)
+	InitializeRoomChatRepository(db)
+	InitializeRoomMessageRepository(db)
 }

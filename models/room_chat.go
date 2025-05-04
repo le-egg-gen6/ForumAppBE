@@ -1,14 +1,19 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type RoomChat struct {
-	ID        string         `gorm:"primary_key;not null" json:"id"`
-	Name      string         `gorm:"not null" json:"name"`
-	CreatedAt *time.Time     `gorm:"autoCreateTime:milli" json:"created_at"`
-	UpdatedAt *time.Time     `gorm:"autoUpdateTime:milli" json:"updated_at"`
-	Delete    bool           `gorm:"default:false" json:"deleted"`
-	Messages  []*RoomMessage `gorm:"foreignKey:RoomID" json:"messages"`
+	gorm.Model
+	ID        uint64         `gorm:"primaryKey;autoIncrement"`
+	Name      string         `gorm:"not null"`
+	CreatedAt *time.Time     `gorm:"autoCreateTime:milli"`
+	UpdatedAt *time.Time     `gorm:"autoUpdateTime:milli"`
+	Delete    bool           `gorm:"default:false"`
+	Users     []*User        `gorm:"many2many:user_room;"`
+	Messages  []*RoomMessage `gorm:"foreignKey:RoomID"`
 }
 
 func (*RoomChat) TableName() string {

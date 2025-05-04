@@ -31,11 +31,11 @@ func GetReactionRepositoryInstance() *ReactionRepository {
 }
 
 func (r *ReactionRepository) Create(reaction *models.ContentReaction) (*models.ContentReaction, error) {
-	if err := r.db.Create(reaction).Error; err != nil {
+	if err := r.db.Model(&models.ContentReaction{}).Create(reaction).Error; err != nil {
 		return nil, err
 	}
 	return reaction, nil
 }
 func (r *ReactionRepository) Update(reaction *models.ContentReaction) error {
-	return r.db.Save(reaction).Error
+	return r.db.Model(&models.ContentReaction{}).Save(reaction).Error
 }

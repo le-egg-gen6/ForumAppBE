@@ -1,17 +1,21 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Post struct {
-	ID        uint64             `gorm:"primary_key;auto_increment" json:"id"`
-	Content   string             `gorm:"type:text;not null" json:"content"`
-	AuthorID  *uint64            `gorm:"not null" json:"author_id"`
-	Images    []*Image           `gorm:"foreignKey:PostID" json:"images"`
-	Comments  []*Comment         `gorm:"foreignKey:PostID" json:"comments"`
-	Reactions []*ContentReaction `gorm:"foreignKey:PostID" json:"reactions"`
-	CreatedAt *time.Time         `gorm:"autoCreateTime:milli" json:"created_at"`
-	UpdatedAt *time.Time         `gorm:"autoUpdateTime:milli" json:"updated_at"`
-	Deleted   bool               `gorm:"default:false" json:"deleted"`
+	gorm.Model
+	ID        uint64             `gorm:"primaryKey;autoIncrement"`
+	Content   string             `gorm:"type:text;not null"`
+	AuthorID  *uint64            `gorm:"not null"`
+	Images    []*Image           `gorm:"foreignKey:PostID"`
+	Comments  []*Comment         `gorm:"foreignKey:PostID"`
+	Reactions []*ContentReaction `gorm:"foreignKey:PostID"`
+	CreatedAt *time.Time         `gorm:"autoCreateTime:milli"`
+	UpdatedAt *time.Time         `gorm:"autoUpdateTime:milli"`
+	Deleted   bool               `gorm:"default:false"`
 }
 
 func (*Post) TableName() string {

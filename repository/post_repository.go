@@ -9,6 +9,7 @@ import (
 type IPostRepository interface {
 	Create(post *models.Post) (*models.Post, error)
 	FindByID(id uint64) (*models.Post, error)
+	FindByIDWithPreloadedField(preloadField string, id uint64) (*models.Post, error)
 	FindAll() ([]*models.Post, error)
 	Update(post *models.Post) error
 	Delete(id uint64) error
@@ -35,7 +36,7 @@ func GetPostRepositoryInstance() *PostRepository {
 }
 
 func (r *PostRepository) Create(post *models.Post) (*models.Post, error) {
-	if err := r.db.Create(post).Error; err != nil {
+	if err := r.db.Model(&models.Post{}).Create(post).Error; err != nil {
 		return nil, err
 	}
 	return post, nil
@@ -43,7 +44,18 @@ func (r *PostRepository) Create(post *models.Post) (*models.Post, error) {
 
 func (r *PostRepository) FindByID(id uint64) (*models.Post, error) {
 	var post models.Post
-	if err := r.db.First(&post, id).Error; err != nil {
+	if err := r.db.Model(&models.Post{}).Where("delete = ?", false).First(&post, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &post, nil
+}
+
+func (r *PostRepository) FindByIDWithPreloadedField(preloadField string, id uint64) (*models.Post, error) {
+	var post models.Post
+	if err := r.db.Model(&models.Post{}).Preload(preloadField).Where("delete = ?", false).First(&post, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -54,14 +66,14 @@ func (r *PostRepository) FindByID(id uint64) (*models.Post, error) {
 
 func (r *PostRepository) FindAll() ([]*models.Post, error) {
 	var posts []*models.Post
-	if err := r.db.Where("deleted = ?", false).Find(&posts).Error; err != nil {
+	if err := r.db.Model(&models.Post{}).Where("deleted = ?", false).Find(&posts).Error; err != nil {
 		return nil, err
 	}
 	return posts, nil
 }
 
 func (r *PostRepository) Update(post *models.Post) error {
-	return r.db.Save(post).Error
+	return r.db.Model(&models.Post{}).Save(post).Error
 }
 
 func (r *PostRepository) Delete(id uint64) error {

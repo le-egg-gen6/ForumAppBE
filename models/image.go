@@ -1,18 +1,20 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type Image struct {
-	ID        uint64     `gorm:"primary_key;auto_increment" json:"id"`
-	URL       string     `gorm:"type:text;not null" json:"url"`
-	UserID    *uint64    `json:"user_id,omitempty"`
-	PostID    *uint64    `json:"post_id,omitempty"`
-	CommentID *uint64    `json:"comment_id,omitempty"`
-	MessageID *uint64    `json:"message_id,omitempty"`
-	StoryID   *uint64    `json:"story_id,omitempty"`
-	CreatedAt *time.Time `gorm:"autoCreateTime:milli" json:"created_at"`
-	UpdatedAt *time.Time `gorm:"autoUpdateTime:milli" json:"updated_at"`
-	Deleted   bool       `gorm:"default:false" json:"deleted"`
+	gorm.Model
+	ID        uint64     `gorm:"primaryKey;autoIncrement"`
+	URL       string     `gorm:"type:text;not null"`
+	UserID    *uint64    `gorm:""`
+	PostID    *uint64    `gorm:""`
+	CommentID *uint64    `gorm:""`
+	MessageID *uint64    `gorm:""`
+	StoryID   *uint64    `gorm:""`
+	CreatedAt *time.Time `gorm:"autoCreateTime:milli"`
 }
 
 func (*Image) TableName() string {

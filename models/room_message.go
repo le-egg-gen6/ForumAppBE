@@ -1,17 +1,21 @@
 package models
 
-import "time"
+import (
+	"gorm.io/gorm"
+	"time"
+)
 
 type RoomMessage struct {
-	ID        uint64             `gorm:"primary_key;auto_increment" json:"id"`
-	UserID    *uint64            `gorm:"not null" json:"user_id"`
-	RoomID    *string            `gorm:"not null" json:"room_id"`
-	Body      string             `gorm:"type:text;not null" json:"body"`
-	Image     *Image             `gorm:"foreignKey:MessageID" json:"image"`
-	Reactions []*ContentReaction `gorm:"foreignKey:MessageID" json:"reactions"`
-	CreatedAt *time.Time         `gorm:"autoCreateTime:milli" json:"created_at"`
-	UpdatedAt *time.Time         `gorm:"autoUpdateTime:milli" json:"updated_at"`
-	Delete    bool               `gorm:"default:false" json:"deleted"`
+	gorm.Model
+	ID        uint64             `gorm:"primaryKey;autoIncrement"`
+	UserID    *uint64            `gorm:"not null"`
+	RoomID    *string            `gorm:"not null"`
+	Body      string             `gorm:"type:text;not null"`
+	Image     *Image             `gorm:"foreignKey:MessageID"`
+	Reactions []*ContentReaction `gorm:"foreignKey:MessageID"`
+	CreatedAt *time.Time         `gorm:"autoCreateTime:milli"`
+	UpdatedAt *time.Time         `gorm:"autoUpdateTime:milli"`
+	Delete    bool               `gorm:"default:false"`
 }
 
 func (*RoomMessage) TableName() string {
