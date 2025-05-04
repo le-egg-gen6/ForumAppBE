@@ -70,11 +70,17 @@ func CreateNewPost(c *gin.Context) {
 	}
 
 	post := &models.Post{
-		AuthorID: user.ID,
+		AuthorID: &user.ID,
 		Content:  createPostDTO.Content,
 		Images:   images,
 	}
 	post, err = repository.GetPostRepositoryInstance().Create(post)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+	user.Posts = append(user.Posts, post)
+	err = repository.GetUserRepositoryInstance().Update(user)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

@@ -41,6 +41,16 @@ func CreateNewComment(c *gin.Context) {
 		return
 	}
 
+	post, err := repository.GetPostRepositoryInstance().FindByID(createCommentDTO.PostID)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+	if post == nil {
+		shared.SendBadRequest(c, "Post Not Found")
+		return
+	}
+
 	file, fileHeader, err := utils.GetFirstMultipartFile(c, constant.FileFormKey)
 	if err != nil {
 		shared.SendBadRequest(c, "Bad Request")
@@ -52,9 +62,9 @@ func CreateNewComment(c *gin.Context) {
 	}
 
 	comment := &models.Comment{
-		UserID: user.ID,
+		UserID: &user.ID,
 		Body:   createCommentDTO.Body,
-		PostID: createCommentDTO.PostID,
+		PostID: &post.ID,
 	}
 	if file != nil {
 		fileDto := dtos.File{
@@ -67,6 +77,18 @@ func CreateNewComment(c *gin.Context) {
 		}
 	}
 	comment, err = repository.GetCommentRepositoryInstance().Create(comment)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+	user.Comments = append(user.Comments, comment)
+	err = repository.GetUserRepositoryInstance().Update(user)
+	if err != nil {
+		shared.SendInternalServerError(c)
+		return
+	}
+	post.Comments = append(post.Comments, comment)
+	err = repository.GetPostRepositoryInstance().Update(post)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

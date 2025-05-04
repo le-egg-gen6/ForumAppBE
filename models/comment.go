@@ -4,8 +4,8 @@ import "time"
 
 type Comment struct {
 	ID        uint64             `gorm:"primary_key;auto_increment" json:"id"`
-	UserID    uint64             `gorm:"not null" json:"user_id"`
-	PostID    uint64             `gorm:"not null" json:"post_id"`
+	UserID    *uint64            `gorm:"not null" json:"user_id"`
+	PostID    *uint64            `gorm:"not null" json:"post_id"`
 	Body      string             `gorm:"type:text;not null" json:"body"`
 	Image     *Image             `gorm:"foreignKey:CommentID" json:"image"`
 	Reactions []*ContentReaction `gorm:"foreignKey:CommentID" json:"reactions"`

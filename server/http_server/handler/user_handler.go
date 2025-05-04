@@ -74,12 +74,12 @@ func SearchUser(c *gin.Context) {
 		shared.SendInternalServerError(c)
 		return
 	}
-	userDTOs := make([]*dtos.SimpleUserDTO, 0)
+	userDTOs := make([]dtos.SimpleUserDTO, 0)
 	for _, user_ := range searchUsers {
 		if user_.ID == user.ID {
 			continue
 		}
-		userDTOs = append(userDTOs, utils.ConvertToSimpleUserDTO(user_))
+		userDTOs = append(userDTOs, *utils.ConvertToSimpleUserDTO(user_))
 	}
 	shared.SendSuccess(c, userDTOs)
 }

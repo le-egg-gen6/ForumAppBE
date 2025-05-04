@@ -13,6 +13,8 @@ type User struct {
 	Validated    bool       `gorm:"default:false" json:"validated"`
 	ValidateCode uint64     `gorm:"default:0" json:"validate_code"`
 	Deleted      bool       `gorm:"default:false" json:"deleted"`
+	Posts        []*Post    `gorm:"foreignKey:AuthorID" json:"posts"`
+	Comments     []*Comment `gorm:"foreignKey:UserID" json:"comments"`
 }
 
 func (*User) TableName() string {
