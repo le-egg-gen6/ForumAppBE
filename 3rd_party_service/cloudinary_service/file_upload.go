@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-type IFileUploader interface {
-	UploadFile(file dtos.File) (string, error)
-}
-
 type FileUploader struct {
 	Validator *validator.Validate
 	Config    *CloudinaryConfig

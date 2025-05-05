@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type IMailSender interface {
-	SendMail(to string, subject string, body string) error
-}
-
 type MailSender struct {
 	Config *MailSenderConfig
 }
