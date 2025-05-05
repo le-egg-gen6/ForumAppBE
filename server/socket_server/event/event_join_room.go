@@ -6,10 +6,6 @@ import (
 	"forum/shared"
 )
 
-type CSJoinRoom struct {
-	RoomID uint64 `json:"roomID"`
-}
-
 func RegisterEventJoinRoom(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
 	router.RegisterEventHandler(constant.CSJoinRoom, EventJoinRoom, middleware...)
 }
