@@ -6,8 +6,8 @@ import (
 	"forum/shared"
 )
 
-func RegisterEventGetChatRoom(router *socket_server.EventRouter) {
-	router.RegisterEventHandler(constant.CSGetChatRoom, EventGetChatRoom)
+func RegisterEventGetChatRoom(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
+	router.RegisterEventHandler(constant.CSGetChatRoom, EventGetChatRoom, middleware...)
 }
 
 func EventGetChatRoom(client *socket_server.SocketClient, data *shared.SocketMessage) error {

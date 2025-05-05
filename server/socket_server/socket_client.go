@@ -7,11 +7,12 @@ import (
 )
 
 type SocketClient struct {
-	ID     string
-	UserID uint64
-	Conn   *websocket.Conn
-	mutex  sync.Mutex
-	Hub    *Hub
+	ID         string
+	UserID     uint64
+	Authorized bool
+	Conn       *websocket.Conn
+	mutex      sync.Mutex
+	Hub        *Hub
 }
 
 func (c *SocketClient) Send(data interface{}) error {

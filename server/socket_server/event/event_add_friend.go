@@ -6,8 +6,8 @@ import (
 	"forum/shared"
 )
 
-func RegisterEventAddFriend(router *socket_server.EventRouter) {
-	router.RegisterEventHandler(constant.CSAddFriend, EventAddFriend)
+func RegisterEventAddFriend(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
+	router.RegisterEventHandler(constant.CSAddFriend, EventAddFriend, middleware...)
 }
 
 func EventAddFriend(client *socket_server.SocketClient, data *shared.SocketMessage) error {

@@ -6,8 +6,8 @@ import (
 	"forum/shared"
 )
 
-func RegisterEventGetNotification(router *socket_server.EventRouter) {
-	router.RegisterEventHandler(constant.CSGetNotification, EventGetNotification)
+func RegisterEventGetNotification(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
+	router.RegisterEventHandler(constant.CSGetNotification, EventGetNotification, middleware...)
 }
 
 func EventGetNotification(client *socket_server.SocketClient, data *shared.SocketMessage) error {

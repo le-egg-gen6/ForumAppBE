@@ -62,10 +62,11 @@ func HandleConnection(hub *Hub, router *EventRouter, w http.ResponseWriter, r *h
 		}
 	}
 	client := &SocketClient{
-		ID:     uuid.NewString(),
-		UserID: uint64(userID),
-		Conn:   conn,
-		Hub:    hub,
+		ID:         uuid.NewString(),
+		UserID:     uint64(userID),
+		Authorized: false,
+		Conn:       conn,
+		Hub:        hub,
 	}
 
 	hub.Register <- client
@@ -102,6 +103,17 @@ func ReadPump(client *SocketClient, router *EventRouter) {
 					string(messageBytes),
 				))
 				continue
+			}
+			middlewares, found := router.GetMiddlewares(msg.Name)
+			passMiddleware := true
+			if found {
+				for _, middleware := range middlewares {
+					pass := middleware(client, &msg)
+					passMiddleware = passMiddleware && pass
+				}
+			}
+			if !passMiddleware {
+				break
 			}
 			handler, found := router.GetEventHandler(msg.Name)
 			if !found {

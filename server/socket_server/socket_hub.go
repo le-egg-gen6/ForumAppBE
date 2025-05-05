@@ -79,6 +79,12 @@ func (h *Hub) GetClientByUserID(userID uint64) *SocketClient {
 	return socketClient
 }
 
+func (h *Hub) AuthorizeSocketConnection(client *SocketClient) {
+	h.rwMutex.Lock()
+	defer h.rwMutex.Unlock()
+	client.Authorized = true
+}
+
 func (h *Hub) Close() {
 	h.rwMutex.Lock()
 	defer h.rwMutex.Unlock()

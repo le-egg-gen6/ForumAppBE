@@ -6,8 +6,12 @@ import (
 	"forum/shared"
 )
 
-func RegisterEventJoinRoom(router *socket_server.EventRouter) {
-	router.RegisterEventHandler(constant.CSJoinRoom, EventJoinRoom)
+type CSJoinRoom struct {
+	RoomID uint64 `json:"roomID"`
+}
+
+func RegisterEventJoinRoom(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
+	router.RegisterEventHandler(constant.CSJoinRoom, EventJoinRoom, middleware...)
 }
 
 func EventJoinRoom(client *socket_server.SocketClient, data *shared.SocketMessage) error {
