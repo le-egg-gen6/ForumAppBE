@@ -7,7 +7,8 @@ func RegisterEvent(router *socket_server.EventRouter) {
 	RegisterEventAddFriend(router, AuthenticationEventMiddleware)
 	RegisterEventGetFriendRequest(router, AuthenticationEventMiddleware)
 	RegisterEventGetNotification(router, AuthenticationEventMiddleware)
-	RegisterEventSendMessage(router, AuthenticationEventMiddleware)
-	RegisterEventJoinRoom(router, AuthenticationEventMiddleware)
+	RegisterEventNewMessage(router, AuthenticationEventMiddleware)
+	RegisterEventReactionMessage(router, AuthenticationEventMiddleware)
+	RegisterEventCreateRoom(router, AuthenticationEventMiddleware)
 	RegisterEventLeaveRoom(router, AuthenticationEventMiddleware)
 }

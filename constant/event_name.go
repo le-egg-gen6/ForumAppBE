@@ -12,8 +12,11 @@ const SCJoinRoom = "sc_join_room"
 const CSLeaveRoom = "cs_leave_room"
 const SCLeaveRoom = "sc_leave_room"
 
-const CSSendMessage = "cs_send_message"
+const CSNewMessage = "cs_send_message"
 const SCSendMessage = "sc_send_message"
+
+const CSReactionMessage = "cs_reaction_message"
+const SCReactionMessage = "sc_reaction_message"
 
 const CSGetChatRoom = "cs_get_chat_room"
 const SCGetChatRoom = "sc_get_chat_room"

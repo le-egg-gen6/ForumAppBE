@@ -6,10 +6,10 @@ import (
 	"forum/shared"
 )
 
-func RegisterEventSendMessage(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
-	router.RegisterEventHandler(constant.CSSendMessage, EventSendMessage, middleware...)
+func RegisterEventNewMessage(router *socket_server.EventRouter, middleware ...socket_server.EventMiddlewareFunc) {
+	router.RegisterEventHandler(constant.CSNewMessage, EventNewMessage, middleware...)
 }
 
-func EventSendMessage(client *socket_server.SocketClient, data *shared.SocketMessage) error {
+func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMessage) error {
 	return nil
 }

@@ -11,7 +11,6 @@ type RoomMessage struct {
 	UserID    *uint64            `gorm:"not null"`
 	RoomID    *string            `gorm:"not null"`
 	Body      string             `gorm:"type:text;not null"`
-	Image     *Image             `gorm:"foreignKey:MessageID"`
 	Reactions []*ContentReaction `gorm:"foreignKey:MessageID"`
 	CreatedAt *time.Time         `gorm:"autoCreateTime:milli"`
 	UpdatedAt *time.Time         `gorm:"autoUpdateTime:milli"`

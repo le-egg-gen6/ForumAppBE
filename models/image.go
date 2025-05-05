@@ -12,8 +12,6 @@ type Image struct {
 	UserID    *uint64    `gorm:""`
 	PostID    *uint64    `gorm:""`
 	CommentID *uint64    `gorm:""`
-	MessageID *uint64    `gorm:""`
-	StoryID   *uint64    `gorm:""`
 	CreatedAt *time.Time `gorm:"autoCreateTime:milli"`
 }
 
