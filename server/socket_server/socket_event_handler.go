@@ -19,8 +19,9 @@ type EventRouter struct {
 
 func InitializeEventRouter(hub *Hub) *EventRouter {
 	return &EventRouter{
-		EventHandlers: make(map[string]EventHandlerFunc),
-		Hub:           hub,
+		EventHandlers:       make(map[string]EventHandlerFunc),
+		EventMiddlewareFunc: make(map[string][]EventMiddlewareFunc),
+		Hub:                 hub,
 	}
 }
 

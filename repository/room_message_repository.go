@@ -8,10 +8,10 @@ import (
 
 type IRoomMessageRepository interface {
 	Create(roomMessage *models.RoomMessage) (*models.RoomMessage, error)
-	FindByID(id int64) (*models.RoomMessage, error)
-	FindByIDWithPreloadedField(preloadField string, id uint64) (*models.RoomMessage, error)
+	FindByID(id uint) (*models.RoomMessage, error)
+	FindByIDWithPreloadedField(id uint, preloadedField ...string) (*models.RoomMessage, error)
 	Update(roomMessage *models.RoomMessage) error
-	Delete(id int64) error
+	Delete(id uint) error
 }
 
 type RoomMessageRepository struct {
@@ -35,15 +35,15 @@ func GetRoomMessageRepositoryInstance() *RoomMessageRepository {
 }
 
 func (r *RoomMessageRepository) Create(roomMessage *models.RoomMessage) (*models.RoomMessage, error) {
-	if err := r.db.Model(&models.RoomMessage{}).Create(roomMessage).Error; err != nil {
+	if err := r.db.Create(roomMessage).Error; err != nil {
 		return nil, err
 	}
 	return roomMessage, nil
 }
 
-func (r *RoomMessageRepository) FindByID(id int64) (*models.RoomMessage, error) {
+func (r *RoomMessageRepository) FindByID(id uint) (*models.RoomMessage, error) {
 	var roomMessage models.RoomMessage
-	if err := r.db.Model(&models.RoomMessage{}).Where("delete = ?", false).First(&roomMessage, id).Error; err != nil {
+	if err := r.db.First(&roomMessage, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -52,9 +52,13 @@ func (r *RoomMessageRepository) FindByID(id int64) (*models.RoomMessage, error) 
 	return &roomMessage, nil
 }
 
-func (r *RoomMessageRepository) FindByIDWithPreloadedField(preloadField string, id uint64) (*models.RoomMessage, error) {
+func (r *RoomMessageRepository) FindByIDWithPreloadedField(id uint, preloadedField ...string) (*models.RoomMessage, error) {
 	var roomMessage models.RoomMessage
-	if err := r.db.Model(&models.RoomMessage{}).Preload(preloadField).Where("delete = ?", false).First(&roomMessage, id).Error; err != nil {
+	tx := r.db
+	for _, field := range preloadedField {
+		tx = tx.Preload(field)
+	}
+	if err := tx.First(&roomMessage, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -64,9 +68,16 @@ func (r *RoomMessageRepository) FindByIDWithPreloadedField(preloadField string, 
 }
 
 func (r *RoomMessageRepository) Update(roomMessage *models.RoomMessage) error {
-	return r.db.Model(&models.RoomMessage{}).Save(roomMessage).Error
+	return r.db.Model(roomMessage).Updates(roomMessage).Error
 }
 
-func (r *RoomMessageRepository) Delete(id int64) error {
-	return r.db.Model(&models.RoomMessage{}).Where("id = ?", id).Update("delete", true).Error
+func (r *RoomMessageRepository) Delete(id uint) error {
+	var roomMessage models.RoomMessage
+	if err := r.db.First(&roomMessage, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return err
+	}
+	return r.db.Delete(&roomMessage).Error
 }

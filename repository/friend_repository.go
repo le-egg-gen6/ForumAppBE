@@ -1,13 +1,14 @@
 package repository
 
 import (
+	"errors"
 	"forum/models"
 	"gorm.io/gorm"
 )
 
 type IFriendRepository interface {
 	Create(friend *models.Friend) (*models.Friend, error)
-	Delete(friend *models.Friend) error
+	Delete(id uint) error
 }
 
 type FriendRepository struct {
@@ -31,12 +32,19 @@ func GetFriendRepositoryInstance() *FriendRepository {
 }
 
 func (f *FriendRepository) Create(friend *models.Friend) (*models.Friend, error) {
-	if err := f.db.Model(&models.Friend{}).Create(friend).Error; err != nil {
+	if err := f.db.Create(friend).Error; err != nil {
 		return nil, err
 	}
 	return friend, nil
 }
 
-func (f *FriendRepository) Delete(id uint64) error {
-	return f.db.Model(&models.Friend{}).Where("id = ?", id).Update("delete", true).Error
+func (f *FriendRepository) Delete(id uint) error {
+	var friend models.Friend
+	if err := f.db.First(&friend, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return err
+	}
+	return f.db.Delete(&friend).Error
 }

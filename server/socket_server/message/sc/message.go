@@ -10,15 +10,19 @@ const LoginSuccess = 0
 const LoginFailure = 1
 
 type SCCreateRoom struct {
-	Status           int                  `json:"status"`
-	RoomID           uint64               `json:"roomID"`
-	Name             string               `json:"name"`
-	ParticipantInfos []dtos.SimpleUserDTO `json:"participantInfos"`
+	Status   int           `json:"status"`
+	RoomInfo dtos.RoomInfo `json:"roomInfo"`
 }
+
+const RoomCreatedSuccess = 0
+const RoomCreateFailed = 1
 
 type SCLeaveRoom struct {
 	Status int `json:"status"`
 }
+
+const RoomLeaveSuccess = 0
+const RoomLeaveFailed = 1
 
 type SCGetChatRoom struct {
 	Rooms []dtos.RoomInfo `json:"rooms"`
@@ -30,8 +34,12 @@ type SCGetRoomMessage struct {
 
 type SCNewMessage struct {
 	RoomID      uint64           `json:"roomID"`
+	Status      int              `json:"status"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
 }
+
+const SendNewMessageSuccess = 0
+const SendNewMessageFailed = 1
 
 type SCReactionMessage struct {
 	RoomID      uint64           `json:"roomID"`

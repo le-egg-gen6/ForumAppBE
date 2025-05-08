@@ -11,4 +11,8 @@ func RegisterEvent(router *socket_server.EventRouter) {
 	RegisterEventReactionMessage(router, AuthenticationEventMiddleware)
 	RegisterEventCreateRoom(router, AuthenticationEventMiddleware)
 	RegisterEventLeaveRoom(router, AuthenticationEventMiddleware)
+	RegisterEventGetChatRoom(router, AuthenticationEventMiddleware)
+	RegisterEventGetRoomMessage(router, AuthenticationEventMiddleware)
+	RegisterEventInviteRoomChat(router, AuthenticationEventMiddleware)
+	RegisterEventResponseInviteRoomChat(router, AuthenticationEventMiddleware)
 }

@@ -79,6 +79,18 @@ func (h *Hub) GetClientByUserID(userID uint64) *SocketClient {
 	return socketClient
 }
 
+func (h *Hub) GetClientsByUserIDs(userIDs []uint64) []*SocketClient {
+	h.rwMutex.RLock()
+	defer h.rwMutex.RUnlock()
+	var clients []*SocketClient
+	for _, userID := range userIDs {
+		if client, found := h.ClientByUserID[userID]; found {
+			clients = append(clients, client)
+		}
+	}
+	return clients
+}
+
 func (h *Hub) AuthorizeSocketConnection(client *SocketClient) {
 	h.rwMutex.Lock()
 	defer h.rwMutex.Unlock()

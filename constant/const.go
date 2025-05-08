@@ -27,3 +27,9 @@ var AllowedReactionTypes = map[string]bool{
 	"sad":   true,
 	"angry": true,
 }
+
+const MessageTypeText = "text"
+const MessageTypeNotification = "notification"
+
+const RoomTypePrivate = "private"
+const RoomTypeGroup = "group"

@@ -6,20 +6,29 @@ const SCLogin = "sc_login"
 const CSAddFriend = "cs_add_friend"
 const SCAddFriend = "sc_add_friend"
 
-const CSJoinRoom = "cs_join_room"
-const SCJoinRoom = "sc_join_room"
+const CSCreateRoom = "cs_create_room"
+const SCCreateRoom = "sc_create_room"
+
+const CSInviteRoomChat = "cs_invite_room_chat"
+const SCInviteRoomChat = "sc_invite_room_chat"
+
+const CSResponseInviteRoomChat = "cs_response_invite_room_chat"
+const SCResponseInviteRoomChat = "sc_response_invite_room_chat"
 
 const CSLeaveRoom = "cs_leave_room"
 const SCLeaveRoom = "sc_leave_room"
 
-const CSNewMessage = "cs_send_message"
-const SCSendMessage = "sc_send_message"
+const CSNewMessage = "cs_new_message"
+const SCNewMessage = "sc_new_message"
 
 const CSReactionMessage = "cs_reaction_message"
 const SCReactionMessage = "sc_reaction_message"
 
 const CSGetChatRoom = "cs_get_chat_room"
 const SCGetChatRoom = "sc_get_chat_room"
+
+const CSGetRoomMessage = "cs_get_room_message"
+const SCGetRoomMessage = "sc_get_room_message"
 
 const CSGetFriendRequest = "cs_get_friend_request"
 const SCGetFriendRequest = "sc_get_friend_request"

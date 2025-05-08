@@ -8,10 +8,11 @@ import (
 
 type IRoomChatRepository interface {
 	Create(roomChat *models.RoomChat) (*models.RoomChat, error)
-	FindByID(id uint64) (*models.RoomChat, error)
-	FindByIDWithPreloadedField(preloadField string, id uint64) (*models.RoomChat, error)
+	FindByID(id uint) (*models.RoomChat, error)
+	FindByIDWithPreloadedField(id uint, preloadedField ...string) (*models.RoomChat, error)
 	Update(roomChat *models.RoomChat) error
-	Delete(id uint64) error
+	UpdateWithAssociations(roomChat *models.RoomChat, associationField string, objs ...interface{}) error
+	Delete(id uint) error
 }
 
 type RoomChatRepository struct {
@@ -35,15 +36,15 @@ func GetRoomChatRepositoryInstance() *RoomChatRepository {
 }
 
 func (r *RoomChatRepository) Create(roomChat *models.RoomChat) (*models.RoomChat, error) {
-	if err := r.db.Model(&models.RoomChat{}).Create(roomChat).Error; err != nil {
+	if err := r.db.Create(roomChat).Error; err != nil {
 		return nil, err
 	}
 	return roomChat, nil
 }
 
-func (r *RoomChatRepository) FindByID(id uint64) (*models.RoomChat, error) {
+func (r *RoomChatRepository) FindByID(id uint) (*models.RoomChat, error) {
 	var roomChat models.RoomChat
-	if err := r.db.Model(&models.RoomChat{}).Where("delete = ?", false).First(&roomChat, id).Error; err != nil {
+	if err := r.db.First(&roomChat, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -52,9 +53,13 @@ func (r *RoomChatRepository) FindByID(id uint64) (*models.RoomChat, error) {
 	return &roomChat, nil
 }
 
-func (r *RoomChatRepository) FindByIDWithPreloadedField(preloadField string, id uint64) (*models.RoomChat, error) {
+func (r *RoomChatRepository) FindByIDWithPreloadedField(id uint, preloadedField ...string) (*models.RoomChat, error) {
 	var roomChat models.RoomChat
-	if err := r.db.Model(&models.RoomChat{}).Preload(preloadField).Where("delete = ?", false).First(&roomChat, id).Error; err != nil {
+	tx := r.db
+	for _, preloadField := range preloadedField {
+		tx = tx.Preload(preloadField)
+	}
+	if err := tx.First(&roomChat, id).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
@@ -64,9 +69,20 @@ func (r *RoomChatRepository) FindByIDWithPreloadedField(preloadField string, id 
 }
 
 func (r *RoomChatRepository) Update(roomChat *models.RoomChat) error {
-	return r.db.Model(&models.RoomChat{}).Save(roomChat).Error
+	return r.db.Model(roomChat).Updates(roomChat).Error
 }
 
-func (r *RoomChatRepository) Delete(id uint64) error {
-	return r.db.Model(&models.RoomChat{}).Where("id = ?", id).Update("delete", true).Error
+func (r *RoomChatRepository) UpdateWithAssociations(roomChat *models.RoomChat, associationField string, objs ...interface{}) error {
+	return r.db.Model(roomChat).Association(associationField).Append(objs)
+}
+
+func (r *RoomChatRepository) Delete(id uint) error {
+	var roomChat models.RoomChat
+	if err := r.db.First(&roomChat, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil
+		}
+		return err
+	}
+	return r.db.Delete(&roomChat).Error
 }

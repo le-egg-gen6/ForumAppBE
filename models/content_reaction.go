@@ -4,8 +4,7 @@ import "gorm.io/gorm"
 
 type ContentReaction struct {
 	gorm.Model
-	ID        uint64  `gorm:"primaryKey;autoIncrement"`
-	Type      string  `gorm:"not null"`
+	Type      string  `gorm:"size:255;not null"`
 	PostID    *uint64 `gorm:""`
 	CommentID *uint64 `gorm:""`
 	MessageID *uint64 `gorm:""`
