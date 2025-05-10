@@ -35,7 +35,7 @@ func EventLeaveRoom(client *socket_server.SocketClient, data *shared.SocketMessa
 		SendLeaveRoomFailure(client)
 		return nil
 	}
-
+	return nil
 }
 
 func SendLeaveRoomFailure(client *socket_server.SocketClient) {

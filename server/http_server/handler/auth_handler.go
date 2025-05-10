@@ -127,7 +127,7 @@ func Validate(c *gin.Context) {
 		shared.SendError(c, http.StatusBadRequest, "Invalid validate code")
 		return
 	}
-	validateCode, err := strconv.ParseUint(validateCodeStr, 10, 64)
+	validateCode, err := strconv.Atoi(validateCodeStr)
 	if err != nil {
 		shared.SendError(c, http.StatusBadRequest, "Invalid validate code")
 		return
@@ -139,7 +139,7 @@ func Validate(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userId))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userId))
 	if err != nil {
 		shared.SendInternalServerError(c)
 	}
@@ -148,7 +148,7 @@ func Validate(c *gin.Context) {
 		return
 	}
 
-	if user.ValidateCode != validateCode {
+	if user.ValidateCode != uint(validateCode) {
 		shared.SendError(c, http.StatusUnauthorized, "Invalid validate code")
 		return
 	}
@@ -179,7 +179,7 @@ func ResendMail(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userId))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userId))
 	if err != nil {
 		shared.SendInternalServerError(c)
 	}

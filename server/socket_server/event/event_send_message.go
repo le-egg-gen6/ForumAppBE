@@ -43,18 +43,12 @@ func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMess
 		return nil
 	}
 	roomMessage := &models.RoomMessage{
-		UserID: sender.ID,
+		UserID: &sender.ID,
 		RoomID: &roomChat.ID,
 		Type:   constant.MessageTypeText,
 		Body:   csNewMessage.Body,
 	}
 	roomMessage, err = repository.GetRoomMessageRepositoryInstance().Create(roomMessage)
-	if err != nil {
-		SendNewMessageFailure(client)
-		return nil
-	}
-	roomChat.Messages = append(roomChat.Messages, roomMessage)
-	err = repository.GetRoomChatRepositoryInstance().Update(roomChat)
 	if err != nil {
 		SendNewMessageFailure(client)
 		return nil
@@ -73,7 +67,7 @@ func BroadcastNewMessage(
 	room *models.RoomChat,
 	message *models.RoomMessage,
 ) {
-	userIDs := make([]uint64, 0)
+	userIDs := make([]uint, 0)
 	for _, user := range room.Users {
 		userIDs = append(userIDs, user.ID)
 	}

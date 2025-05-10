@@ -5,7 +5,7 @@ import (
 )
 
 type PostDTO struct {
-	ID          uint64        `json:"id"`
+	ID          uint          `json:"id"`
 	Content     string        `json:"content"`
 	Author      SimpleUserDTO `json:"author"`
 	Images      []string      `json:"images"`
@@ -15,7 +15,7 @@ type PostDTO struct {
 }
 
 type SimplePostDTO struct {
-	ID        uint64        `json:"id"`
+	ID        uint          `json:"id"`
 	Content   string        `json:"content"`
 	Author    SimpleUserDTO `json:"author"`
 	Images    []string      `json:"images"`

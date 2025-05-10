@@ -6,8 +6,8 @@ import (
 
 type Friend struct {
 	gorm.Model
-	UserID   uint64 `gorm:"not null"`
-	FriendID uint64 `gorm:"not null"`
+	UserID   uint `gorm:"not null"`
+	FriendID uint `gorm:"not null"`
 }
 
 func (*Friend) TableName() string {

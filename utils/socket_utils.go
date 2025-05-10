@@ -44,7 +44,7 @@ func ConvertMessage[T any](socketMsg *shared.SocketMessage) *T {
 	return &csMsg
 }
 
-func IsUserOnline(userID uint64) bool {
+func IsUserOnline(userID uint) bool {
 	_, found := socket_server.GetSocketServer().Hub.ClientByUserID[userID]
 	return found
 }

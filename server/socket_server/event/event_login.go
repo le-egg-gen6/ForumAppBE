@@ -38,12 +38,12 @@ func EventLogin(client *socket_server.SocketClient, data *shared.SocketMessage) 
 		SendLoginFailure(client)
 		return nil
 	}
-	userIDToken, err := strconv.ParseUint(claims.Subject, 10, 64)
+	userIDToken, err := strconv.Atoi(claims.Subject)
 	if err != nil {
 		SendLoginFailure(client)
 		return nil
 	}
-	if userIDToken != client.UserID {
+	if uint(userIDToken) != client.UserID {
 		SendLoginFailure(client)
 		return nil
 	}

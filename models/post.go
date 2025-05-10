@@ -7,7 +7,7 @@ import (
 type Post struct {
 	gorm.Model
 	Content   string             `gorm:"type:text;not null"`
-	UserID    *uint64            `gorm:""`
+	UserID    *uint              `gorm:""`
 	Images    []*Image           `gorm:"foreignKey:PostID"`
 	Comments  []*Comment         `gorm:"foreignKey:PostID"`
 	Reactions []*ContentReaction `gorm:"foreignKey:PostID"`

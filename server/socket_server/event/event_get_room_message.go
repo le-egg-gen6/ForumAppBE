@@ -40,7 +40,7 @@ func EventGetRoomMessage(client *socket_server.SocketClient, data *shared.Socket
 	}
 	for _, message := range roomChat.Messages {
 		if message.Type == constant.MessageTypeText {
-			user, err := repository.GetUserRepositoryInstance().FindByID(message.UserID)
+			user, err := repository.GetUserRepositoryInstance().FindByID(*message.UserID)
 			if err != nil || user == nil {
 				continue
 			}

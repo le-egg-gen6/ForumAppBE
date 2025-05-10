@@ -6,8 +6,8 @@ import (
 
 type Comment struct {
 	gorm.Model
-	UserID    *uint64            `gorm:""`
-	PostID    *uint64            `gorm:""`
+	UserID    *uint              `gorm:""`
+	PostID    *uint              `gorm:""`
 	Body      string             `gorm:"type:text;not null"`
 	Image     *Image             `gorm:"foreignKey:CommentID"`
 	Reactions []*ContentReaction `gorm:"foreignKey:CommentID"`

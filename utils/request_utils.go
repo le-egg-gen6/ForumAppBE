@@ -6,8 +6,8 @@ import (
 	"mime/multipart"
 )
 
-func GetCurrentContextUserID(c *gin.Context) int64 {
-	if id, ok := c.Value(constant.UserIDContextKey).(int64); ok {
+func GetCurrentContextUserID(c *gin.Context) int {
+	if id, ok := c.Value(constant.UserIDContextKey).(int); ok {
 		return id
 	}
 	return -1

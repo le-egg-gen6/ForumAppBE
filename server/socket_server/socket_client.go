@@ -8,7 +8,7 @@ import (
 
 type SocketClient struct {
 	ID         string
-	UserID     uint64
+	UserID     uint
 	Authorized bool
 	Conn       *websocket.Conn
 	mutex      sync.Mutex

@@ -53,9 +53,9 @@ func HandleConnection(hub *Hub, router *EventRouter, w http.ResponseWriter, r *h
 		return
 	}
 	userIDStr := r.URL.Query().Get("id")
-	var userID int64
+	var userID int
 	if userIDStr != "" {
-		userID, err = strconv.ParseInt(userIDStr, 10, 64)
+		userID, err = strconv.Atoi(userIDStr)
 		if err != nil || userID < 0 {
 			logger.GetLogInstance().Error(fmt.Sprintf("Parse user id failed: %v", err))
 			return
@@ -63,7 +63,7 @@ func HandleConnection(hub *Hub, router *EventRouter, w http.ResponseWriter, r *h
 	}
 	client := &SocketClient{
 		ID:         uuid.NewString(),
-		UserID:     uint64(userID),
+		UserID:     uint(userID),
 		Authorized: false,
 		Conn:       conn,
 		Hub:        hub,

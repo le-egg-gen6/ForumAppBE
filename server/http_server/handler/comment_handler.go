@@ -25,7 +25,7 @@ func CreateNewComment(c *gin.Context) {
 		shared.SendUnauthorized(c)
 		return
 	}
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userID))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -63,8 +63,8 @@ func CreateNewComment(c *gin.Context) {
 
 	comment := &models.Comment{
 		UserID: &user.ID,
-		Body:   createCommentDTO.Body,
 		PostID: &post.ID,
+		Body:   createCommentDTO.Body,
 	}
 	if file != nil {
 		fileDto := dtos.File{
@@ -77,18 +77,6 @@ func CreateNewComment(c *gin.Context) {
 		}
 	}
 	comment, err = repository.GetCommentRepositoryInstance().Create(comment)
-	if err != nil {
-		shared.SendInternalServerError(c)
-		return
-	}
-	user.Comments = append(user.Comments, comment)
-	err = repository.GetUserRepositoryInstance().Update(user)
-	if err != nil {
-		shared.SendInternalServerError(c)
-		return
-	}
-	post.Comments = append(post.Comments, comment)
-	err = repository.GetPostRepositoryInstance().Update(post)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

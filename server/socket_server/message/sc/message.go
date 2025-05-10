@@ -33,7 +33,7 @@ type SCGetRoomMessage struct {
 }
 
 type SCNewMessage struct {
-	RoomID      uint64           `json:"roomID"`
+	RoomID      uint             `json:"roomID"`
 	Status      int              `json:"status"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
 }
@@ -42,7 +42,7 @@ const SendNewMessageSuccess = 0
 const SendNewMessageFailed = 1
 
 type SCReactionMessage struct {
-	RoomID      uint64           `json:"roomID"`
+	RoomID      uint             `json:"roomID"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
 }
 

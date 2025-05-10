@@ -9,7 +9,7 @@ import (
 
 type Hub struct {
 	Clients        map[*websocket.Conn]*SocketClient
-	ClientByUserID map[uint64]*SocketClient
+	ClientByUserID map[uint]*SocketClient
 	Register       chan *SocketClient
 	Unregister     chan *SocketClient
 	rwMutex        sync.RWMutex
@@ -18,7 +18,7 @@ type Hub struct {
 func InitializeNewHub() *Hub {
 	return &Hub{
 		Clients:        make(map[*websocket.Conn]*SocketClient),
-		ClientByUserID: make(map[uint64]*SocketClient),
+		ClientByUserID: make(map[uint]*SocketClient),
 		Register:       make(chan *SocketClient),
 		Unregister:     make(chan *SocketClient),
 	}
@@ -69,7 +69,7 @@ func (h *Hub) Run() {
 	}
 }
 
-func (h *Hub) GetClientByUserID(userID uint64) *SocketClient {
+func (h *Hub) GetClientByUserID(userID uint) *SocketClient {
 	h.rwMutex.RLock()
 	defer h.rwMutex.RUnlock()
 	socketClient, found := h.ClientByUserID[userID]
@@ -79,7 +79,7 @@ func (h *Hub) GetClientByUserID(userID uint64) *SocketClient {
 	return socketClient
 }
 
-func (h *Hub) GetClientsByUserIDs(userIDs []uint64) []*SocketClient {
+func (h *Hub) GetClientsByUserIDs(userIDs []uint) []*SocketClient {
 	h.rwMutex.RLock()
 	defer h.rwMutex.RUnlock()
 	var clients []*SocketClient

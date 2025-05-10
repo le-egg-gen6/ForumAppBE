@@ -10,7 +10,8 @@ type User struct {
 	Email          string           `gorm:"size:255;not null;unique"`
 	Password       string           `gorm:"size:255;not null"`
 	Validated      bool             `gorm:"default:false"`
-	ValidateCode   uint64           `gorm:"default:0"`
+	ValidateCode   uint             `gorm:"default:0"`
+	Avatar         *Image           `gorm:"foreignKey:UserID"`
 	Posts          []*Post          `gorm:"foreignKey:UserID"`
 	Comments       []*Comment       `gorm:"foreignKey:UserID"`
 	Friends        []*Friend        `gorm:"foreignKey:UserID"`

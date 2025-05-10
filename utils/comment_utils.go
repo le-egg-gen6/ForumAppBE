@@ -11,7 +11,7 @@ func ConvertToCommentDTO(user *models.User, comment *models.Comment) *dtos.Comme
 		PostID:    *comment.PostID,
 		Author:    *ConvertToSimpleUserDTO(user),
 		Body:      comment.Body,
-		CreatedAt: *comment.CreatedAt,
+		CreatedAt: comment.CreatedAt,
 	}
 	reactions := make([]dtos.ReactionDTO, 0)
 	for _, reaction := range comment.Reactions {
@@ -27,6 +27,6 @@ func ConvertToSimpleCommentDTO(user *models.User, comment *models.Comment) *dtos
 		PostID:    *comment.PostID,
 		Author:    *ConvertToSimpleUserDTO(user),
 		Body:      comment.Body,
-		CreatedAt: *comment.CreatedAt,
+		CreatedAt: comment.CreatedAt,
 	}
 }

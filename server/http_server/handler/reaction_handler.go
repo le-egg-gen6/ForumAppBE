@@ -26,7 +26,7 @@ func ReactionToPost(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userID))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -37,12 +37,12 @@ func ReactionToPost(c *gin.Context) {
 	}
 
 	postIDStr := utils.GetRequestParam(c, "id")
-	postID, err := strconv.ParseUint(postIDStr, 10, 64)
+	postID, err := strconv.Atoi(postIDStr)
 	if err != nil {
 		shared.SendBadRequest(c, "Post not exist")
 		return
 	}
-	post, err := repository.GetPostRepositoryInstance().FindByID(postID)
+	post, err := repository.GetPostRepositoryInstance().FindByID(uint(postID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -68,12 +68,6 @@ func ReactionToPost(c *gin.Context) {
 			shared.SendInternalServerError(c)
 			return
 		}
-		post.Reactions = append(post.Reactions, reaction)
-		err = repository.GetPostRepositoryInstance().Update(post)
-		if err != nil {
-			shared.SendInternalServerError(c)
-			return
-		}
 	}
 	reaction.Count = reaction.Count + 1
 	err = repository.GetReactionRepositoryInstance().Update(reaction)
@@ -91,7 +85,7 @@ func ReactionToComment(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userID))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -107,7 +101,7 @@ func ReactionToComment(c *gin.Context) {
 		shared.SendBadRequest(c, "Post not exist")
 		return
 	}
-	comment, err := repository.GetCommentRepositoryInstance().FindByID(commentID)
+	comment, err := repository.GetCommentRepositoryInstance().FindByID(uint(commentID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -129,12 +123,6 @@ func ReactionToComment(c *gin.Context) {
 			Count:     0,
 		}
 		reaction, err = repository.GetReactionRepositoryInstance().Create(reaction)
-		if err != nil {
-			shared.SendInternalServerError(c)
-			return
-		}
-		comment.Reactions = append(comment.Reactions, reaction)
-		err = repository.GetCommentRepositoryInstance().Update(comment)
 		if err != nil {
 			shared.SendInternalServerError(c)
 			return

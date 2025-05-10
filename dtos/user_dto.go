@@ -3,7 +3,7 @@ package dtos
 import "time"
 
 type UserDTO struct {
-	ID        uint64    `json:"id"`
+	ID        uint      `json:"id"`
 	Username  string    `json:"username"`
 	Email     string    `json:"email"`
 	Avatar    string    `json:"avatar"`
@@ -12,7 +12,7 @@ type UserDTO struct {
 }
 
 type SimpleUserDTO struct {
-	ID       uint64 `json:"id"`
+	ID       uint   `json:"id"`
 	Username string `json:"username"`
 	Avatar   string `json:"avatar"`
 	Online   bool   `json:"online"`

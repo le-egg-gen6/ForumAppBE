@@ -5,34 +5,34 @@ type CSLogin struct {
 }
 
 type CSCreateRoom struct {
-	Name           string   `json:"name"`
-	ParticipantIDs []uint64 `json:"participantIDs"`
+	Name           string `json:"name"`
+	ParticipantIDs []uint `json:"participantIDs"`
 }
 
 type CSLeaveRoom struct {
-	RoomID uint64 `json:"roomID"`
+	RoomID uint `json:"roomID"`
 }
 
 type CSGetChatRoom struct {
 }
 
 type CSGetRoomMessage struct {
-	RoomID uint64 `json:"roomID"`
+	RoomID uint `json:"roomID"`
 }
 
 type CSNewMessage struct {
-	RoomID uint64 `json:"roomID"`
+	RoomID uint   `json:"roomID"`
 	Body   string `json:"body"`
 }
 
 type CSReactionMessage struct {
-	RoomID    uint64 `json:"roomID"`
-	MessageID uint64 `json:"messageID"`
+	RoomID    uint   `json:"roomID"`
+	MessageID uint   `json:"messageID"`
 	Type      string `json:"type"`
 }
 
 type CSAddFriend struct {
-	FriendID uint64 `json:"friendID"`
+	FriendID uint `json:"friendID"`
 }
 
 type CSGetNotification struct {

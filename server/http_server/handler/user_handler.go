@@ -25,7 +25,7 @@ func GetInfo(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userID))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -35,12 +35,12 @@ func GetInfo(c *gin.Context) {
 		return
 	}
 	searchUserIDStr := utils.GetRequestParam(c, "id")
-	searchUserID, err := strconv.ParseUint(searchUserIDStr, 10, 64)
+	searchUserID, err := strconv.Atoi(searchUserIDStr)
 	if err != nil {
 		shared.SendBadRequest(c, "User not exist")
 		return
 	}
-	searchUser, err := repository.GetUserRepositoryInstance().FindByID(searchUserID)
+	searchUser, err := repository.GetUserRepositoryInstance().FindByID(uint(searchUserID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -59,7 +59,7 @@ func SearchUser(c *gin.Context) {
 		return
 	}
 
-	user, err := repository.GetUserRepositoryInstance().FindByID(uint64(userID))
+	user, err := repository.GetUserRepositoryInstance().FindByID(uint(userID))
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

@@ -6,10 +6,10 @@ import (
 
 type Image struct {
 	gorm.Model
-	URL       string  `gorm:"type:text;not null"`
-	UserID    *uint64 `gorm:""`
-	PostID    *uint64 `gorm:""`
-	CommentID *uint64 `gorm:""`
+	URL       string `gorm:"type:text;not null"`
+	UserID    *uint  `gorm:""`
+	PostID    *uint  `gorm:""`
+	CommentID *uint  `gorm:""`
 }
 
 func (*Image) TableName() string {

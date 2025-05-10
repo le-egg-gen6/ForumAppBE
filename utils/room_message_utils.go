@@ -7,10 +7,10 @@ import (
 
 func ConvertToRoomMessageInfo(message *models.RoomMessage, user *models.User) *dtos.MessageInfo {
 	messageInfo := &dtos.MessageInfo{
-		MessageID: message.ID,
+		ID:        message.ID,
 		Body:      message.Body,
 		Type:      message.Type,
-		CreatedAt: *message.CreatedAt,
+		CreatedAt: message.CreatedAt,
 	}
 	if user != nil {
 		messageInfo.Author = *ConvertToSimpleUserDTO(user)

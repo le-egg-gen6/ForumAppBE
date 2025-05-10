@@ -1,7 +1,7 @@
 package dtos
 
 type RoomInfo struct {
-	RoomID           uint64          `json:"roomID"`
+	ID               uint            `json:"id"`
 	Name             string          `json:"name"`
 	Type             string          `json:"type"`
 	ParticipantInfos []SimpleUserDTO `json:"participantInfos"`

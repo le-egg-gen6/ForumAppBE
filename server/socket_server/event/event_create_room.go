@@ -36,9 +36,8 @@ func EventCreateRoom(client *socket_server.SocketClient, data *shared.SocketMess
 		users = append(users, user)
 	}
 	roomChat := &models.RoomChat{
-		Name:  csCreateRoom.Name,
-		Type:  constant.RoomTypeGroup,
-		Users: users,
+		Name: csCreateRoom.Name,
+		Type: constant.RoomTypeGroup,
 	}
 	if len(csCreateRoom.ParticipantIDs) == 2 {
 		roomChat.Type = constant.RoomTypePrivate
@@ -48,13 +47,10 @@ func EventCreateRoom(client *socket_server.SocketClient, data *shared.SocketMess
 		SendCreateRoomFailure(client)
 		return nil
 	}
-	for _, user := range users {
-		user.RoomChats = append(user.RoomChats, roomChat)
-		err = repository.GetUserRepositoryInstance().Update(user)
-		if err != nil {
-			SendCreateRoomFailure(client)
-			return nil
-		}
+	err = repository.GetRoomChatRepositoryInstance().UpdateAssociations(roomChat, "Users", users)
+	if err != nil {
+		SendCreateRoomFailure(client)
+		return nil
 	}
 	BroadcastCreateRoomSuccess(client, csCreateRoom.ParticipantIDs, roomChat)
 	return nil
@@ -66,7 +62,7 @@ func SendCreateRoomFailure(client *socket_server.SocketClient) {
 
 func BroadcastCreateRoomSuccess(
 	client *socket_server.SocketClient,
-	userIDs []uint64,
+	userIDs []uint,
 	room *models.RoomChat,
 ) {
 	roomMembersSocketConn := client.Hub.GetClientsByUserIDs(userIDs)

@@ -18,18 +18,18 @@ func CheckPasswordHash(password, hash string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password)) == nil
 }
 
-func GenerateValidateCode(numberDigits int) uint64 {
+func GenerateValidateCode(numberDigits int) uint {
 	if numberDigits < 1 || numberDigits > 18 { // Limit to prevent overflow
 		return 0
 	}
 
 	rand.Seed(uint64(time.Now().UnixNano())) // Properly seed the random generator
 
-	minimum := uint64(1)
+	minimum := uint(1)
 	for i := 1; i < numberDigits; i++ {
 		minimum *= 10
 	}
 	maximum := minimum*10 - 1
 
-	return minimum + uint64(rand.Int63n(int64(maximum-minimum+1)))
+	return minimum + uint(rand.Intn(int(maximum-minimum+1)))
 }

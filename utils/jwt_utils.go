@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func GenerateToken(userID uint64, remember bool) (string, error) {
+func GenerateToken(userID uint, remember bool) (string, error) {
 	expiredTime := time.Now()
 	if remember {
 		expiredTime = expiredTime.Add(time.Hour * constant.ExpiredTimeInHourRemember)
@@ -16,7 +16,7 @@ func GenerateToken(userID uint64, remember bool) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-		Subject:   strconv.FormatUint(userID, 10),
+		Subject:   strconv.Itoa(int(userID)),
 		ExpiresAt: jwt.NewNumericDate(expiredTime),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	})

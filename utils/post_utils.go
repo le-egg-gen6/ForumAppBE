@@ -16,7 +16,7 @@ func ConvertToPostDTO(
 		ID:        post.ID,
 		Content:   post.Content,
 		Author:    *ConvertToSimpleUserDTO(user),
-		CreatedAt: *post.CreatedAt,
+		CreatedAt: post.CreatedAt,
 	}
 
 	images := make([]string, 0)
@@ -44,7 +44,7 @@ func ConvertToSimplePostDTO(user *models.User, post *models.Post) *dtos.SimplePo
 		ID:        post.ID,
 		Content:   post.Content,
 		Author:    *ConvertToSimpleUserDTO(user),
-		CreatedAt: *post.CreatedAt,
+		CreatedAt: post.CreatedAt,
 	}
 	images := make([]string, 0)
 	for _, image := range post.Images {

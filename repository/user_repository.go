@@ -13,8 +13,9 @@ type IUserRepository interface {
 	FindByUsername(username string) (*models.User, error)
 	FindByEmail(email string) (*models.User, error)
 	Update(user *models.User) error
-	UpdateWithAssociations(user *models.User, associationField string, obj ...interface{}) error
+	UpdateAssociations(user *models.User, associationField string, obj ...interface{}) error
 	Delete(id uint) error
+	DeleteAssociations(user *models.User, associationField string, obj ...interface{}) error
 	FindAll() ([]*models.User, error)
 	FindByPartialUsername(partialUsername string) ([]*models.User, error)
 }
@@ -98,7 +99,7 @@ func (r *UserRepository) Update(user *models.User) error {
 	return r.db.Model(user).Updates(user).Error
 }
 
-func (r *UserRepository) UpdateWithAssociations(user *models.User, associationField string, objs ...interface{}) error {
+func (r *UserRepository) UpdateAssociations(user *models.User, associationField string, objs ...interface{}) error {
 	return r.db.Model(user).Association(associationField).Append(objs)
 }
 
@@ -111,6 +112,10 @@ func (r *UserRepository) Delete(id uint) error {
 		return err
 	}
 	return r.db.Delete(&user).Error
+}
+
+func (r *UserRepository) DeleteAssociations(user *models.User, associationField string, objs ...interface{}) error {
+	return r.db.Model(user).Association(associationField).Delete(objs)
 }
 
 func (r *UserRepository) FindAll() ([]*models.User, error) {

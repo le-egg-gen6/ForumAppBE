@@ -3,7 +3,7 @@ package dtos
 import "time"
 
 type MessageInfo struct {
-	MessageID uint64        `json:"messageID"`
+	ID        uint          `json:"id"`
 	Body      string        `json:"body"`
 	Type      string        `json:"type"`
 	Author    SimpleUserDTO `json:"author"`

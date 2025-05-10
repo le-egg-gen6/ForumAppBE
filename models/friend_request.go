@@ -6,8 +6,8 @@ import (
 
 type FriendRequest struct {
 	gorm.Model
-	UserID   uint64 `gorm:"not null"`
-	SenderID uint64 `gorm:"not null"`
+	UserID   uint `gorm:"not null"`
+	SenderID uint `gorm:"not null"`
 }
 
 func (*FriendRequest) TableName() string {

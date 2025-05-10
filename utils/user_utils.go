@@ -13,7 +13,7 @@ func ConvertToUserDTO(user *models.User) *dtos.UserDTO {
 		ID:        user.ID,
 		Username:  user.Username,
 		Email:     user.Email,
-		CreatedAt: *user.CreatedAt,
+		CreatedAt: user.CreatedAt,
 	}
 	if user.Avatar != nil {
 		userDTO.Avatar = user.Avatar.URL
