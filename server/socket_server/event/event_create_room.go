@@ -19,18 +19,22 @@ func RegisterEventCreateRoom(router *socket_server.EventRouter, middleware ...so
 func EventCreateRoom(client *socket_server.SocketClient, data *shared.SocketMessage) error {
 	csCreateRoom := utils.ConvertMessage[cs.CSCreateRoom](data)
 	if csCreateRoom == nil {
-		SendCreateRoomFailure(client)
+		SendCreateRoomFailure(client, "Bad request")
 		return nil
 	}
-	if len(csCreateRoom.ParticipantIDs) < 2 || !slices.Contains(csCreateRoom.ParticipantIDs, client.UserID) {
-		SendCreateRoomFailure(client)
+	if len(csCreateRoom.ParticipantIDs) < 2 {
+		SendCreateRoomFailure(client, "Room member size must be greater than 2")
+		return nil
+	}
+	if !slices.Contains(csCreateRoom.ParticipantIDs, client.UserID) {
+		SendCreateRoomFailure(client, "You need in room to create room")
 		return nil
 	}
 	users := make([]*models.User, 0)
 	for _, userID := range csCreateRoom.ParticipantIDs {
 		user, err := repository.GetUserRepositoryInstance().FindByIDWithPreloadedField(userID, "RoomChats")
 		if err != nil || user == nil {
-			SendCreateRoomFailure(client)
+			SendCreateRoomFailure(client, "Not in room")
 			return nil
 		}
 		users = append(users, user)
@@ -44,28 +48,23 @@ func EventCreateRoom(client *socket_server.SocketClient, data *shared.SocketMess
 	}
 	roomChat, err := repository.GetRoomChatRepositoryInstance().Create(roomChat)
 	if err != nil {
-		SendCreateRoomFailure(client)
+		SendCreateRoomFailure(client, "Room not found")
 		return nil
 	}
 	err = repository.GetRoomChatRepositoryInstance().UpdateAssociations(roomChat, "Users", users)
 	if err != nil {
-		SendCreateRoomFailure(client)
+		SendCreateRoomFailure(client, "Unexpected error occurred, please try again")
 		return nil
 	}
-	BroadcastCreateRoomSuccess(client, csCreateRoom.ParticipantIDs, roomChat)
+	SendCreateRoomSuccess(client, roomChat)
+	BroadcastUpdateRoomInfo(client, roomChat)
 	return nil
 }
 
-func SendCreateRoomFailure(client *socket_server.SocketClient) {
-	utils.Send(client, constant.SCCreateRoom, sc.SCCreateRoom{Status: sc.RoomCreateFailed})
+func SendCreateRoomFailure(client *socket_server.SocketClient, message string) {
+	utils.Send(client, constant.SCCreateRoom, sc.SCCreateRoom{Status: sc.StatusError, Message: message})
 }
 
-func BroadcastCreateRoomSuccess(
-	client *socket_server.SocketClient,
-	userIDs []uint,
-	room *models.RoomChat,
-) {
-	roomMembersSocketConn := client.Hub.GetClientsByUserIDs(userIDs)
-	scMessage := sc.SCCreateRoom{Status: sc.RoomCreatedSuccess, RoomInfo: *utils.ConvertToRoomInfo(room)}
-	utils.Broadcast(roomMembersSocketConn, constant.SCCreateRoom, scMessage)
+func SendCreateRoomSuccess(client *socket_server.SocketClient, room *models.RoomChat) {
+	utils.Send(client, constant.SCCreateRoom, sc.SCCreateRoom{Status: sc.StatusSuccess, RoomInfo: *utils.ConvertToRoomInfo(room)})
 }

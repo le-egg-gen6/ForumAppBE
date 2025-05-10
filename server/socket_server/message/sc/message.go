@@ -2,55 +2,58 @@ package sc
 
 import "forum/dtos"
 
-type SCLogin struct {
-	Status int `json:"status"`
-}
+const StatusSuccess = 0
+const StatusError = 1
 
-const LoginSuccess = 0
-const LoginFailure = 1
+type SCLogin struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
 
 type SCCreateRoom struct {
 	Status   int           `json:"status"`
+	Message  string        `json:"message"`
 	RoomInfo dtos.RoomInfo `json:"roomInfo"`
 }
 
-const RoomCreatedSuccess = 0
-const RoomCreateFailed = 1
-
-type SCLeaveRoom struct {
-	Status int `json:"status"`
+type SCAddParticipantRoomChat struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
 }
 
-const RoomLeaveSuccess = 0
-const RoomLeaveFailed = 1
+type SCLeaveRoom struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+type SCUpdateRoomInfo struct {
+	Status   int           `json:"status"`
+	Message  string        `json:"message"`
+	RoomInfo dtos.RoomInfo `json:"roomInfo"`
+}
 
 type SCGetChatRoom struct {
-	Rooms []dtos.RoomInfo `json:"rooms"`
+	Status  int             `json:"status"`
+	Message string          `json:"message"`
+	Rooms   []dtos.RoomInfo `json:"rooms"`
 }
 
 type SCGetRoomMessage struct {
+	Status   int                `json:"status"`
+	Message  string             `json:"message"`
 	Messages []dtos.MessageInfo `json:"messages"`
 }
 
 type SCNewMessage struct {
-	RoomID      uint             `json:"roomID"`
 	Status      int              `json:"status"`
+	Message     string           `json:"message"`
+	RoomID      uint             `json:"roomID"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
 }
-
-const SendNewMessageSuccess = 0
-const SendNewMessageFailed = 1
 
 type SCReactionMessage struct {
+	Status      int              `json:"status"`
+	Message     string           `json:"message"`
 	RoomID      uint             `json:"roomID"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
-}
-
-type SCGetNotification struct {
-}
-
-type SCGetFriendRequest struct {
-}
-
-type SCNewNotification struct {
 }

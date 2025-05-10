@@ -9,11 +9,10 @@ const SCAddFriend = "sc_add_friend"
 const CSCreateRoom = "cs_create_room"
 const SCCreateRoom = "sc_create_room"
 
-const CSInviteRoomChat = "cs_invite_room_chat"
-const SCInviteRoomChat = "sc_invite_room_chat"
+const SCUpdateRoomInfo = "sc_update_room_info"
 
-const CSResponseInviteRoomChat = "cs_response_invite_room_chat"
-const SCResponseInviteRoomChat = "sc_response_invite_room_chat"
+const CSAddParticipantRoomChat = "cs_add_participant_room_chat"
+const SCAddParticipantRoomChat = "sc_add_participant_room_chat"
 
 const CSLeaveRoom = "cs_leave_room"
 const SCLeaveRoom = "sc_leave_room"

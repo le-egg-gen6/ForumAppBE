@@ -18,17 +18,21 @@ func RegisterEventNewMessage(router *socket_server.EventRouter, middleware ...so
 func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMessage) error {
 	csNewMessage := utils.ConvertMessage[cs.CSNewMessage](data)
 	if csNewMessage == nil {
-		SendNewMessageFailure(client)
+		SendNewMessageFailure(client, "Bad request")
 		return nil
 	}
 	sender, err := repository.GetUserRepositoryInstance().FindByID(client.UserID)
 	if err != nil || sender == nil {
-		SendNewMessageFailure(client)
+		SendNewMessageFailure(client, "User not found")
 		return nil
 	}
-	roomChat, err := repository.GetRoomChatRepositoryInstance().FindByIDWithPreloadedField(csNewMessage.RoomID, "Users", "Messages")
-	if err != nil || roomChat == nil {
-		SendNewMessageFailure(client)
+	roomChat, err := repository.GetRoomChatRepositoryInstance().FindByIDWithPreloadedField(csNewMessage.RoomID, "Users")
+	if err != nil {
+		SendNewMessageFailure(client, "Unexpected error occurred, please try again")
+		return nil
+	}
+	if roomChat == nil {
+		SendNewMessageFailure(client, "Room chat not found")
 		return nil
 	}
 	inRoom := false
@@ -39,7 +43,7 @@ func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMess
 		}
 	}
 	if !inRoom {
-		SendNewMessageFailure(client)
+		SendNewMessageFailure(client, "Not in room")
 		return nil
 	}
 	roomMessage := &models.RoomMessage{
@@ -50,32 +54,13 @@ func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMess
 	}
 	roomMessage, err = repository.GetRoomMessageRepositoryInstance().Create(roomMessage)
 	if err != nil {
-		SendNewMessageFailure(client)
+		SendNewMessageFailure(client, "Unexpected error occurred, please try again")
 		return nil
 	}
-	BroadcastNewMessage(client, sender, roomChat, roomMessage)
+	BroadcastRoomNewMessage(client, roomChat, roomMessage, sender)
 	return nil
 }
 
-func SendNewMessageFailure(client *socket_server.SocketClient) {
-	utils.Send(client, constant.SCNewMessage, sc.SCNewMessage{Status: sc.SendNewMessageFailed})
-}
-
-func BroadcastNewMessage(
-	client *socket_server.SocketClient,
-	sender *models.User,
-	room *models.RoomChat,
-	message *models.RoomMessage,
-) {
-	userIDs := make([]uint, 0)
-	for _, user := range room.Users {
-		userIDs = append(userIDs, user.ID)
-	}
-	roomMemberSocketConn := client.Hub.GetClientsByUserIDs(userIDs)
-	scMessage := sc.SCNewMessage{
-		RoomID:      room.ID,
-		Status:      sc.SendNewMessageSuccess,
-		MessageInfo: *utils.ConvertToRoomMessageInfo(message, sender),
-	}
-	utils.Broadcast(roomMemberSocketConn, constant.SCNewMessage, scMessage)
+func SendNewMessageFailure(client *socket_server.SocketClient, message string) {
+	utils.Send(client, constant.SCNewMessage, sc.SCNewMessage{Status: sc.StatusError, Message: message})
 }

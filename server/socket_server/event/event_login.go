@@ -19,44 +19,44 @@ func RegisterEventLogin(router *socket_server.EventRouter, middleware ...socket_
 func EventLogin(client *socket_server.SocketClient, data *shared.SocketMessage) error {
 	csLogin := utils.ConvertMessage[cs.CSLogin](data)
 	if csLogin == nil {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Bad request")
 		return nil
 	}
 	tokenStr := csLogin.Token
 	tokenUsed, _ := redis_service.Get[bool](tokenStr)
 	if tokenUsed {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Token invalid")
 		return nil
 	}
 	jwtToken, err := utils.ValidateToken(tokenStr)
 	if err != nil {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Token invalid")
 		return nil
 	}
 	claims, ok := jwtToken.Claims.(*jwt.RegisteredClaims)
 	if !ok {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Token invalid")
 		return nil
 	}
 	userIDToken, err := strconv.Atoi(claims.Subject)
 	if err != nil {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Token invalid")
 		return nil
 	}
 	if uint(userIDToken) != client.UserID {
-		SendLoginFailure(client)
+		SendLoginFailure(client, "Token invalid")
 		return nil
 	}
 	SendLoginSuccess(client)
 	return nil
 }
 
-func SendLoginFailure(client *socket_server.SocketClient) {
-	utils.Send(client, constant.SCLogin, sc.SCLogin{Status: sc.LoginFailure})
+func SendLoginFailure(client *socket_server.SocketClient, message string) {
+	utils.Send(client, constant.SCLogin, sc.SCLogin{Status: sc.StatusError, Message: message})
 	utils.Disconnect(client)
 }
 
 func SendLoginSuccess(client *socket_server.SocketClient) {
-	utils.Send(client, constant.SCLogin, sc.SCLogin{Status: sc.LoginSuccess})
+	utils.Send(client, constant.SCLogin, sc.SCLogin{Status: sc.StatusSuccess})
 	client.Hub.AuthorizeSocketConnection(client)
 }

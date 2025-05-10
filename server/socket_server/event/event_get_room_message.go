@@ -19,12 +19,16 @@ func EventGetRoomMessage(client *socket_server.SocketClient, data *shared.Socket
 	csGetRoomMessage := utils.ConvertMessage[cs.CSGetRoomMessage](data)
 	messages := make([]dtos.MessageInfo, 0)
 	if csGetRoomMessage == nil {
-		SendGetRoomMessage(client, messages)
+		SendGetRoomMessageFailure(client, "Bad request")
 		return nil
 	}
 	roomChat, err := repository.GetRoomChatRepositoryInstance().FindByIDWithPreloadedField(csGetRoomMessage.RoomID, "Messages", "Users")
-	if err != nil || roomChat == nil {
-		SendGetRoomMessage(client, messages)
+	if err != nil {
+		SendGetRoomMessageFailure(client, "Unexpected error occurred, please try again")
+		return nil
+	}
+	if roomChat == nil {
+		SendGetRoomMessageFailure(client, "Room chat not found")
 		return nil
 	}
 	inRoom := false
@@ -35,7 +39,7 @@ func EventGetRoomMessage(client *socket_server.SocketClient, data *shared.Socket
 		}
 	}
 	if !inRoom {
-		SendGetRoomMessage(client, messages)
+		SendGetRoomMessageFailure(client, "Not in room")
 		return nil
 	}
 	for _, message := range roomChat.Messages {
@@ -49,10 +53,13 @@ func EventGetRoomMessage(client *socket_server.SocketClient, data *shared.Socket
 			messages = append(messages, *utils.ConvertToRoomMessageInfo(message, nil))
 		}
 	}
-	SendGetRoomMessage(client, messages)
+	SendGetRoomMessageSuccess(client, messages)
 	return nil
 }
 
-func SendGetRoomMessage(client *socket_server.SocketClient, messages []dtos.MessageInfo) {
-	utils.Send(client, constant.SCGetRoomMessage, sc.SCGetRoomMessage{Messages: messages})
+func SendGetRoomMessageFailure(client *socket_server.SocketClient, message string) {
+	utils.Send(client, constant.SCGetRoomMessage, sc.SCGetRoomMessage{Status: sc.StatusError, Message: message})
+}
+func SendGetRoomMessageSuccess(client *socket_server.SocketClient, messages []dtos.MessageInfo) {
+	utils.Send(client, constant.SCGetRoomMessage, sc.SCGetRoomMessage{Status: sc.StatusSuccess, Messages: messages})
 }

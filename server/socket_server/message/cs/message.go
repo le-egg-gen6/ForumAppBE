@@ -9,6 +9,11 @@ type CSCreateRoom struct {
 	ParticipantIDs []uint `json:"participantIDs"`
 }
 
+type CSAddParticipantRoomChat struct {
+	RoomID        uint `json:"roomID"`
+	ParticipantID uint `json:"participantID"`
+}
+
 type CSLeaveRoom struct {
 	RoomID uint `json:"roomID"`
 }
