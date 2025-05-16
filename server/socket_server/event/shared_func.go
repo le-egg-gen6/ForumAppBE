@@ -8,7 +8,7 @@ import (
 	"forum/utils"
 )
 
-func BroadcastRoomNewMessage(
+func BroadcastRoomUpdateMessage(
 	client *socket_server.SocketClient,
 	room *models.RoomChat,
 	message *models.RoomMessage,
@@ -19,7 +19,7 @@ func BroadcastRoomNewMessage(
 		userIDs = append(userIDs, user.ID)
 	}
 	roomMembersSocketConn := client.Hub.GetClientsByUserIDs(userIDs)
-	scMessage := sc.SCNewMessage{
+	scMessage := sc.SCUpdateMessage{
 		RoomID:      room.ID,
 		Status:      sc.StatusSuccess,
 		MessageInfo: *utils.ConvertToRoomMessageInfo(message, author),

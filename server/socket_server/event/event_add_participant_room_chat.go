@@ -70,7 +70,7 @@ func EventAddParticipantRoomChat(client *socket_server.SocketClient, data *share
 	if err != nil || roomMessage == nil {
 		return nil
 	}
-	BroadcastRoomNewMessage(client, roomChat, roomMessage, nil)
+	BroadcastRoomUpdateMessage(client, roomChat, roomMessage, nil)
 	roomChat.Users = append(roomChat.Users, user)
 	BroadcastUpdateRoomInfo(client, roomChat)
 	return nil

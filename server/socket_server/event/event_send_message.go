@@ -57,10 +57,10 @@ func EventNewMessage(client *socket_server.SocketClient, data *shared.SocketMess
 		SendNewMessageFailure(client, "Unexpected error occurred, please try again")
 		return nil
 	}
-	BroadcastRoomNewMessage(client, roomChat, roomMessage, sender)
+	BroadcastRoomUpdateMessage(client, roomChat, roomMessage, sender)
 	return nil
 }
 
 func SendNewMessageFailure(client *socket_server.SocketClient, message string) {
-	utils.Send(client, constant.SCNewMessage, sc.SCNewMessage{Status: sc.StatusError, Message: message})
+	utils.Send(client, constant.SCNewMessage, sc.SCUpdateMessage{Status: sc.StatusError, Message: message})
 }

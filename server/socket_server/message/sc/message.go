@@ -44,14 +44,7 @@ type SCGetRoomMessage struct {
 	Messages []dtos.MessageInfo `json:"messages"`
 }
 
-type SCNewMessage struct {
-	Status      int              `json:"status"`
-	Message     string           `json:"message"`
-	RoomID      uint             `json:"roomID"`
-	MessageInfo dtos.MessageInfo `json:"messageInfo"`
-}
-
-type SCReactionMessage struct {
+type SCUpdateMessage struct {
 	Status      int              `json:"status"`
 	Message     string           `json:"message"`
 	RoomID      uint             `json:"roomID"`

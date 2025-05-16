@@ -16,3 +16,12 @@ type RoomMessage struct {
 func (*RoomMessage) TableName() string {
 	return "room_message"
 }
+
+func (r *RoomMessage) GetReaction(reactionType string) *ContentReaction {
+	for _, reaction := range r.Reactions {
+		if reaction.Type == reactionType {
+			return reaction
+		}
+	}
+	return nil
+}

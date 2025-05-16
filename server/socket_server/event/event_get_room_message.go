@@ -3,6 +3,7 @@ package event
 import (
 	"forum/constant"
 	"forum/dtos"
+	"forum/models"
 	"forum/repository"
 	"forum/server/socket_server"
 	"forum/server/socket_server/message/cs"
@@ -42,13 +43,19 @@ func EventGetRoomMessage(client *socket_server.SocketClient, data *shared.Socket
 		SendGetRoomMessageFailure(client, "Not in room")
 		return nil
 	}
+	mapUserIdToUser := make(map[uint]*models.User)
 	for _, message := range roomChat.Messages {
 		if message.Type == constant.MessageTypeText {
-			user, err := repository.GetUserRepositoryInstance().FindByID(*message.UserID)
-			if err != nil || user == nil {
-				continue
+			user_, ok := mapUserIdToUser[*message.UserID]
+			if !ok {
+				user_, err = repository.GetUserRepositoryInstance().FindByIDWithPreloadedField(*message.UserID, "Avatar")
+				if err != nil {
+					SendGetRoomMessageFailure(client, "Unexpected error occurred, please try again")
+					return nil
+				}
+				mapUserIdToUser[*message.UserID] = user_
 			}
-			messages = append(messages, *utils.ConvertToRoomMessageInfo(message, user))
+			messages = append(messages, *utils.ConvertToRoomMessageInfo(message, user_))
 		} else {
 			messages = append(messages, *utils.ConvertToRoomMessageInfo(message, nil))
 		}

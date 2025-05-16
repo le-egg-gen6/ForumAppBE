@@ -78,7 +78,7 @@ func EventLeaveRoom(client *socket_server.SocketClient, data *shared.SocketMessa
 	if err != nil || roomMessage == nil {
 		return nil
 	}
-	BroadcastRoomNewMessage(client, roomChat, roomMessage, nil)
+	BroadcastRoomUpdateMessage(client, roomChat, roomMessage, nil)
 	return nil
 }
 
