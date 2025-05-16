@@ -15,8 +15,9 @@ type User struct {
 	Posts          []*Post          `gorm:"foreignKey:UserID"`
 	Comments       []*Comment       `gorm:"foreignKey:UserID"`
 	Friends        []*Friend        `gorm:"foreignKey:UserID"`
-	FriendRequests []*FriendRequest `gorm:"foreignKey:UserID"`
 	RoomChats      []*RoomChat      `gorm:"many2many:user_room"`
+	FriendRequests []*FriendRequest `gorm:"foreignKey:UserID"`
+	Notifications  []*Notification  `gorm:"foreignKey:UserID"`
 }
 
 func (*User) TableName() string {

@@ -12,4 +12,5 @@ func InitializeRepository(db *gorm.DB) {
 	InitializeRoomMessageRepository(db)
 	InitializeFriendRepository(db)
 	InitializeFriendRequestRepository(db)
+	InitializeNotificationRepository(db)
 }

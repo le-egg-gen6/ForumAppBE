@@ -27,6 +27,10 @@ func InitializeFriendRequestRepository(db *gorm.DB) {
 	}
 }
 
+func GetFriendRequestRepositoryInstance() *FriendRequestRepository {
+	return FriendRequestRepositoryInstance
+}
+
 func (f *FriendRequestRepository) Create(friendRequest *models.FriendRequest) (*models.FriendRequest, error) {
 	if err := f.db.Create(friendRequest).Error; err != nil {
 		return nil, err
