@@ -46,7 +46,7 @@ func EventAddParticipantRoomChat(client *socket_server.SocketClient, data *share
 		SendAddParticipantRoomChatFailure(client, "Can't add yourself")
 		return nil
 	}
-	user, err := repository.GetUserRepositoryInstance().FindByID(client.UserID)
+	user, err := repository.GetUserRepositoryInstance().FindByID(csAddParticipantRoomChat.ParticipantID)
 	if err != nil {
 		SendAddParticipantRoomChatFailure(client, "Unexpected error occurred, please try again")
 		return nil
