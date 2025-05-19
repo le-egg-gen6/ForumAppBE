@@ -33,3 +33,8 @@ const MessageTypeNotification = "notification"
 
 const RoomTypePrivate = "private"
 const RoomTypeGroup = "group"
+
+const FriendStatusSendAddFriendRequest = -1
+const FriendStatusReceiveFriendRequest = -2
+const FriendStatusStranger = 0
+const FriendStatusAddedFriend = 1

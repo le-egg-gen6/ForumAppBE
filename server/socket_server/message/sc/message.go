@@ -50,3 +50,8 @@ type SCUpdateMessage struct {
 	RoomID      uint             `json:"roomID"`
 	MessageInfo dtos.MessageInfo `json:"messageInfo"`
 }
+
+type SCAddFriend struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
