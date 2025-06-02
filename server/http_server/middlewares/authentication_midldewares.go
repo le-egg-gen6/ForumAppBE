@@ -6,8 +6,8 @@ import (
 	"forum/shared"
 	"forum/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"strings"
+	"time"
 )
 
 func AuthenticationMiddlewares() gin.HandlerFunc {
@@ -33,15 +33,28 @@ func AuthenticationMiddlewares() gin.HandlerFunc {
 			return
 		}
 
-		claims, ok := jwtToken.Claims.(*jwt.RegisteredClaims)
+		claims, ok := jwtToken.Claims.(*utils.CustomClaims)
 		if !ok {
-			shared.SendBadRequest(c, "Invalid credentials")
+			shared.SendUnauthorized(c)
 			c.Abort()
 			return
 		}
 
-		c.Set(constant.UserIDContextKey, claims.Subject)
+		if claims.IssuedAt.Unix() > time.Now().Unix() {
+			shared.SendUnauthorized(c)
+			c.Abort()
+			return
+		}
+
+		if claims.ExpiresAt.Unix() < time.Now().Unix() {
+			shared.SendUnauthorized(c)
+			c.Abort()
+			return
+		}
+
+		c.Set(constant.UserIDContextKey, claims.UserID)
 		c.Set(constant.AuthorizationTokenContextKey, tokenStr)
+		c.Set(constant.UserValidatedStatusKey, claims.Validated)
 		c.Next()
 	}
 }

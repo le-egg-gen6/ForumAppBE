@@ -15,7 +15,7 @@ import (
 func InitializePostHandler(router *gin.RouterGroup) {
 	postGroup := router.Group("/post")
 	{
-		postGroup.POST("/create", middlewares.AuthenticationMiddlewares(), CreateNewPost)
+		postGroup.POST("/create", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), CreateNewPost)
 	}
 }
 

@@ -20,6 +20,13 @@ func GetCurrentContextAuthorizationToken(c *gin.Context) string {
 	return ""
 }
 
+func GetCurrentContextUserValidatedStatus(c *gin.Context) bool {
+	if validated, ok := c.Value(constant.UserValidatedStatusKey).(bool); ok {
+		return validated
+	}
+	return false
+}
+
 func GetRequestHeader(c *gin.Context, key string) string {
 	return c.Request.Header.Get(key)
 }

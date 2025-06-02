@@ -19,7 +19,7 @@ func EventAddFriend(client *socket_server.SocketClient, data *shared.SocketMessa
 		AddFriendFailure(client, "Bad request")
 		return nil
 	}
-	
+	return nil
 }
 
 func AddFriendFailure(client *socket_server.SocketClient, message string) {

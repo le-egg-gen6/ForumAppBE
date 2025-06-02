@@ -50,7 +50,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, remember)
+	token, err := utils.GenerateToken(user.ID, remember, user.Validated)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -112,7 +112,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, false)
+	token, err := utils.GenerateToken(user.ID, false, false)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return
@@ -163,7 +163,7 @@ func Validate(c *gin.Context) {
 	currentToken := utils.GetCurrentContextAuthorizationToken(c)
 	_ = redis_service.SetWithoutTTL(currentToken, true)
 
-	newToken, err := utils.GenerateToken(user.ID, false)
+	newToken, err := utils.GenerateToken(user.ID, false, true)
 	if err != nil {
 		shared.SendInternalServerError(c)
 		return

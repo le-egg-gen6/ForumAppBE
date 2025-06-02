@@ -13,8 +13,8 @@ import (
 func InitializeUserHandler(router *gin.RouterGroup) {
 	userGroup := router.Group("/user")
 	{
-		userGroup.GET("/info", middlewares.AuthenticationMiddlewares(), GetInfo)
-		userGroup.GET("/search", middlewares.AuthenticationMiddlewares(), SearchUser)
+		userGroup.GET("/info", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), GetInfo)
+		userGroup.GET("/search", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), SearchUser)
 	}
 }
 

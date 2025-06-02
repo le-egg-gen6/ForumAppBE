@@ -1,6 +1,7 @@
 package constant
 
 const UserIDContextKey = "UserID"
+const UserValidatedStatusKey = "UserValidatedStatus"
 const RequestIDContextKey = "RequestID"
 const AuthorizationTokenContextKey = "AuthorizationToken"
 

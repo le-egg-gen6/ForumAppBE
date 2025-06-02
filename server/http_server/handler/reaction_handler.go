@@ -13,9 +13,9 @@ import (
 func InitializeReactionHandler(router *gin.RouterGroup) {
 	reactionRouter := router.Group("/reaction")
 	{
-		reactionRouter.GET("/post", middlewares.AuthenticationMiddlewares(), ReactionToPost)
-		reactionRouter.GET("/comment", middlewares.AuthenticationMiddlewares(), ReactionToComment)
-		reactionRouter.GET("/story", middlewares.AuthenticationMiddlewares(), ReactionToStory)
+		reactionRouter.GET("/post", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), ReactionToPost)
+		reactionRouter.GET("/comment", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), ReactionToComment)
+		reactionRouter.GET("/story", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), ReactionToStory)
 	}
 }
 

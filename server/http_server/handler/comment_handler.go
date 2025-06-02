@@ -15,7 +15,7 @@ import (
 func InitializeCommentHandler(router *gin.RouterGroup) {
 	commentGroup := router.Group("/comment")
 	{
-		commentGroup.POST("/create", middlewares.AuthenticationMiddlewares(), CreateNewComment)
+		commentGroup.POST("/create", middlewares.AuthenticationMiddlewares(), middlewares.AccountValidationMiddlewares(), CreateNewComment)
 	}
 }
 
