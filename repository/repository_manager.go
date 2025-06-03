@@ -13,4 +13,5 @@ func InitializeRepository(db *gorm.DB) {
 	InitializeFriendRepository(db)
 	InitializeFriendRequestRepository(db)
 	InitializeNotificationRepository(db)
+	InitializeHashTagRepository(db)
 }
