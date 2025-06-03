@@ -9,6 +9,7 @@ import (
 type IFriendRequestRepository interface {
 	Create(friendRequest *models.FriendRequest) (*models.FriendRequest, error)
 	Delete(id uint) error
+	IsAddedFriendRequest(userId1 uint, userId2 uint) bool
 }
 
 type FriendRequestRepository struct {
@@ -47,4 +48,12 @@ func (f *FriendRequestRepository) Delete(id uint) error {
 		return err
 	}
 	return f.db.Delete(&friendRequest).Error
+}
+
+func (f *FriendRequestRepository) IsAddedFriendRequest(userId uint, senderId uint) bool {
+	var friendRequest *models.FriendRequest = nil
+	if err := f.db.Where("user_id = ? AND sender_id = ?", userId, senderId).First(friendRequest).Error; err != nil {
+		return false
+	}
+	return true
 }
